@@ -1,0 +1,771 @@
+<meta charset="utf-8">
+<title>Meia 3 Fronteiras</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+/* Layout: one column, generous white space. Landing = hero + stacked sections. Inscrição, checkout e portal = página estreita própria. */
+:root{
+  --bg:#FFFFFF; --soft:#F4F4F2; --line:#E4E4E1; --fg:#0F0F0E; --muted:#6A6A66;
+  --accent:#0A5BD3; --accent-ink:#FFFFFF;
+  --ok:#12805C; --warn:#9A5800; --crit:#C02626;
+  --f-display:"Archivo","Arial Narrow",sans-serif;
+  --f-body:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D0D0C; --soft:#171716; --line:#2A2A28; --fg:#F2F2EF; --muted:#9C9C97;
+  --accent:#6AA2FF; --accent-ink:#06142B; --ok:#4FD69C; --warn:#F2B44C; --crit:#FF7D7D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D0D0C; --soft:#171716; --line:#2A2A28; --fg:#F2F2EF; --muted:#9C9C97;
+  --accent:#6AA2FF; --accent-ink:#06142B; --ok:#4FD69C; --warn:#F2B44C; --crit:#FF7D7D; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:700}
+p{margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.narrow{max-width:640px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:24px;height:64px}
+.logo{font-family:var(--f-display);font-stretch:75%;font-weight:800;font-size:20px;letter-spacing:.02em;text-transform:uppercase;text-decoration:none;white-space:nowrap;background:none;border:0;padding:0;cursor:pointer}
+.links{display:flex;gap:22px;margin-right:auto}
+.links button{background:none;border:0;padding:0;cursor:pointer;font-size:14px;color:var(--muted)}
+.links button:hover{color:var(--fg)}
+.top-r{display:flex;gap:10px;align-items:center;margin-left:auto}
+@media (max-width:860px){.links{display:none}}
+@media (max-width:420px){.top .hide-xs{display:none}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--fg);background:var(--fg);color:var(--bg);padding:12px 22px;border-radius:999px;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{opacity:.88}
+.btn-ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--fg);opacity:1}
+.btn-accent{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-sm{padding:8px 16px;font-size:14px}
+.btn-lg{padding:16px 30px;font-size:17px}
+.btn-block{width:100%}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.link{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;font-weight:600;font-size:14px}
+
+/* hero */
+.hero{padding-block:72px 56px;border-bottom:1px solid var(--line)}
+.hero h1{font-family:var(--f-display);font-stretch:68%;font-weight:800;text-transform:uppercase;font-size:clamp(52px,10.5vw,148px);line-height:.86;letter-spacing:-.01em}
+.hero h1 span{display:block}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:28px;font-size:18px}
+.hero-meta b{font-weight:600}
+.hero-cta{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center;margin-top:36px}
+.count{display:flex;gap:18px}
+.count div{display:flex;flex-direction:column}
+.count b{font-family:var(--f-mono);font-size:26px;font-weight:500;line-height:1.1;font-variant-numeric:tabular-nums}
+.count span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.strip{margin-top:56px}
+.strip-line{display:grid;grid-template-columns:1fr 1.3fr 1fr;height:4px;gap:4px}
+.strip-line i{background:var(--fg)}
+.strip-line i:nth-child(2){background:var(--accent)}
+.strip-lbl{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:4px;margin-top:12px;font-size:13px}
+.strip-lbl div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.strip-lbl b{font-weight:600}
+.strip-lbl div:last-child{text-align:right}
+
+/* sections */
+.sec{padding-block:80px;border-bottom:1px solid var(--line)}
+.sec-h{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:24px 48px;align-items:start}
+.sec-h h2{font-family:var(--f-display);font-stretch:75%;font-weight:800;font-size:clamp(32px,4vw,48px);line-height:1;text-transform:uppercase}
+@media (max-width:820px){.sec-h{grid-template-columns:1fr}.sec{padding-block:56px}}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.cols>*{background:var(--bg);padding:28px;min-width:0}
+@media (max-width:640px){.cols{grid-template-columns:1fr}}
+.price{font-family:var(--f-display);font-stretch:75%;font-weight:700;font-size:44px;line-height:1;margin:14px 0 6px}
+.km{font-family:var(--f-display);font-stretch:68%;font-weight:800;font-size:72px;line-height:.9}
+.km small{font-size:28px}
+.dl{display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px 16px;margin:18px 0 0;font-size:15px}
+.dl dt{color:var(--muted)}
+.dl dd{margin:0}
+.list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.list li{display:flex;justify-content:space-between;gap:16px;padding:16px 0;border-bottom:1px solid var(--line)}
+.prose{display:flex;flex-direction:column;gap:14px;max-width:62ch}
+details{border-bottom:1px solid var(--line)}
+details:first-child{border-top:1px solid var(--line)}
+summary{cursor:pointer;list-style:none;padding:20px 0;font-weight:600;display:flex;justify-content:space-between;gap:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--f-mono);color:var(--muted)}
+details[open] summary::after{content:"−"}
+details p{padding:0 0 20px;color:var(--muted);max-width:62ch}
+footer{padding-block:40px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+
+/* flow pages */
+.flow{padding-block:48px 80px}
+.flow h1{font-family:var(--f-display);font-stretch:75%;font-weight:800;font-size:clamp(36px,6vw,56px);line-height:1;text-transform:uppercase;margin:10px 0 8px}
+.block{padding-block:28px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:16px}
+.block h2{font-size:15px;font-weight:600;display:flex;gap:10px;align-items:baseline}
+.block h2 .mono{color:var(--muted);font-size:12px}
+.seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:10px}
+.seg label{position:relative;display:flex;flex-direction:column;gap:2px;border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.seg label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.seg b{font-weight:600}
+.seg span{font-size:14px;color:var(--muted)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.full{grid-column:1/-1}
+@media (max-width:560px){.fields{grid-template-columns:1fr}}
+.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.f label{font-size:13px;color:var(--muted)}
+.f input,.f select{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--fg)}
+.f input[type=file]{padding:10px}
+.f .err{color:var(--crit);font-size:13px}
+.f.bad input,.f.bad select{border-color:var(--crit)}
+.chk{display:flex;gap:12px;align-items:flex-start;font-size:15px;cursor:pointer}
+.chk input{width:18px;height:18px;margin-top:3px;accent-color:var(--fg);flex:none}
+.chk .err{display:block;color:var(--crit);font-size:13px}
+.total{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-block:24px;border-top:1px solid var(--line)}
+.total b{font-family:var(--f-display);font-stretch:75%;font-size:40px;font-weight:700;line-height:1}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
+
+/* gateway checkout (generic stand-in) */
+.gw-bar{background:var(--soft);border-bottom:1px solid var(--line)}
+.gw-bar .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;height:56px;font-size:14px}
+.gw-lock{display:flex;gap:8px;align-items:center;font-weight:600}
+.gw{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:40px;padding-block:40px 80px;align-items:start}
+@media (max-width:820px){.gw{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-radius:16px;padding:24px;min-width:0}
+.tabs{display:flex;gap:6px;background:var(--soft);padding:4px;border-radius:999px;margin-bottom:20px}
+.tabs button{flex:1;border:0;background:transparent;padding:10px;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px;color:var(--muted)}
+.tabs button[aria-pressed="true"]{background:var(--bg);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tabs button:disabled{cursor:not-allowed;opacity:.5}
+.qr{background:#FFFFFF;padding:12px;border-radius:12px;display:inline-block;line-height:0;border:1px solid var(--line)}
+.qr svg{width:168px;height:168px;display:block}
+.pixcode{font-family:var(--f-mono);font-size:11px;word-break:break-all;background:var(--soft);padding:12px;border-radius:10px;color:var(--muted)}
+.sum{display:flex;flex-direction:column;gap:10px;font-size:15px}
+.sum div{display:flex;justify-content:space-between;gap:12px}
+.sum .t{border-top:1px solid var(--line);padding-top:12px;font-weight:700;font-size:18px}
+.note{font-size:13px;color:var(--muted);padding:12px 14px;border-radius:10px;background:var(--soft)}
+.alert{font-size:14px;padding:12px 14px;border-radius:10px;border:1px solid var(--crit);color:var(--crit)}
+
+/* portal */
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
+.badge::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.b-ok{color:var(--ok)}.b-warn{color:var(--warn)}.b-crit{color:var(--crit)}.b-muted{color:var(--muted)}
+.bib{display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center;padding-block:28px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+@media (max-width:520px){.bib{grid-template-columns:1fr}}
+.bib .n{font-family:var(--f-display);font-stretch:68%;font-weight:800;font-size:96px;line-height:.85}
+.kv{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px 16px;font-size:15px;margin:0}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;overflow-wrap:anywhere}
+@media (max-width:520px){.kv{grid-template-columns:1fr;gap:2px}.kv dd{margin-bottom:8px}}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:12px 20px;border-radius:999px;font-size:14px;z-index:60;max-width:calc(100% - 40px)}
+.demo{font-size:12px;color:var(--muted);text-align:center;padding:10px 20px;border-top:1px solid var(--line)}
+/* organizador */
+.otabs{display:flex;gap:28px;overflow-x:auto;overflow-y:hidden;border-bottom:1px solid var(--line);margin-bottom:36px;scrollbar-width:none}
+.otabs button{background:none;border:0;padding:16px 0 14px;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;font-weight:600;font-size:14px;white-space:nowrap}
+.otabs button[aria-current="true"]{color:var(--fg);border-bottom-color:var(--fg)}
+.cnt{font-family:var(--f-mono);font-size:11px;background:var(--fg);color:var(--bg);border-radius:999px;padding:1px 7px;margin-left:4px}
+.oh{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.oh h1{font-family:var(--f-display);font-stretch:75%;font-weight:800;font-size:40px;line-height:1;text-transform:uppercase}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:40px}
+.stats>div{background:var(--bg);padding:22px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.stats b{font-family:var(--f-display);font-stretch:75%;font-weight:700;font-size:36px;line-height:1;font-variant-numeric:tabular-nums}
+.stats span{font-size:13px;color:var(--muted)}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ogrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:40px 48px;margin-bottom:40px}
+.ogrid h3,.osec{font-size:13px;font-family:var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:14px}
+.bars{display:flex;align-items:flex-end;gap:4px;height:140px;border-bottom:1px solid var(--line)}
+.bars i{flex:1;background:var(--fg);min-height:2px;position:relative}
+.bars i.part{opacity:.3}
+.bars-x{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-top:6px}
+.split{display:flex;flex-direction:column;gap:10px}
+.split div{display:grid;grid-template-columns:96px minmax(0,1fr) 48px;gap:12px;align-items:center;font-size:14px}
+.split .tr{height:6px;background:var(--soft)}
+.split .tr i{display:block;height:100%;background:var(--fg)}
+.split .v{text-align:right;font-family:var(--f-mono);font-size:13px}
+.todo{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.todo button{display:flex;justify-content:space-between;align-items:center;gap:16px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:16px 0;cursor:pointer;text-align:left}
+.todo button:hover span:first-child{text-decoration:underline}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:10px 12px 10px 0;border-bottom:1px solid var(--fg);white-space:nowrap}
+td{padding:14px 12px 14px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td.r,th.r{text-align:right}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--soft)}
+.filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.filters .f{flex:1 1 160px}
+.filters .f.grow{flex:3 1 260px}
+.pager{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:16px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:18px 0;border-bottom:1px solid var(--line)}
+.item:first-child{border-top:1px solid var(--line)}
+@media (max-width:640px){.item{grid-template-columns:1fr}}
+.item select{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 12px;font-size:13px}
+.evi{list-style:none;padding:0;margin:14px 0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.evi li{display:flex;gap:10px}
+.evi .y{color:var(--ok)}.evi .n{color:var(--crit)}.evi .q{color:var(--muted)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;padding:calc(env(safe-area-inset-top,0px) + 48px) max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))}
+.modal{background:var(--bg);border-radius:16px;width:100%;max-width:640px;padding:28px;display:flex;flex-direction:column;gap:20px;min-width:0}
+.x{border:1px solid var(--line);background:var(--bg);width:36px;height:36px;border-radius:999px;cursor:pointer;font-size:18px;flex:none}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}.btn,.seg label{transition:opacity .15s,border-color .15s,box-shadow .15s}}
+</style>
+
+<div id="app"></div>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function(){
+"use strict";
+const DAY=864e5;
+/* datas da edição 2026; o "hoje" do protótipo é simulado para o site aparecer com inscrições abertas */
+const SIM_TODAY=new Date('2026-08-20T10:00:00-03:00').getTime(),LOAD=Date.now(),simNow=()=>SIM_TODAY+(Date.now()-LOAD);
+const EVENT=new Date('2026-10-11T06:30:00-03:00');
+const PRICE={geral:300,reduzido:250},FEE=20,MAX_INST=6,INST_RATE=.0199,CHANGE_FEE=80;
+const KEY='tf-v4';
+const DOCS={BR:['RG','CNH','Passaporte'],PY:['Cédula de identidad','Pasaporte'],AR:['DNI','Pasaporte'],XX:['Passaporte']};
+const COUNTRIES=[['BR','Brasil'],['PY','Paraguai'],['AR','Argentina'],['XX','Outro país']];
+
+let DB={regs:[],session:null};
+try{const s=localStorage.getItem(KEY);if(s)DB=JSON.parse(s)}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}};
+const S={draft:null,errors:{},pay:'pix',inst:1,cardErr:'',login:{email:'',sent:false,err:''},flash:'',cancel:null,checkout:null};
+
+/* utils */
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const BRL=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}),money=v=>BRL.format(v);
+const fmtDT=ms=>new Date(ms).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+function cpfOk(v){v=String(v).replace(/\D/g,'');if(v.length!==11||/^(\d)\1+$/.test(v))return false;let s=0;for(let i=0;i<9;i++)s+=+v[i]*(10-i);let d=(s*10)%11%10;if(d!==+v[9])return false;s=0;for(let i=0;i<10;i++)s+=+v[i]*(11-i);d=(s*10)%11%10;return d===+v[10]}
+function genCPF(rand){rand=rand||Math.random;const n=[];for(let i=0;i<9;i++)n.push(Math.floor(rand()*10));let s=0;for(let i=0;i<9;i++)s+=n[i]*(10-i);n.push((s*10)%11%10);s=0;for(let i=0;i<10;i++)s+=n[i]*(11-i);n.push((s*10)%11%10);const x=n.join('');return x.slice(0,3)+'.'+x.slice(3,6)+'.'+x.slice(6,9)+'-'+x.slice(9)}
+function luhn(n){n=String(n).replace(/\D/g,'');if(n.length<13)return false;let s=0,alt=false;for(let i=n.length-1;i>=0;i--){let d=+n[i];if(alt){d*=2;if(d>9)d-=9}s+=d;alt=!alt}return s%10===0}
+function ageAt(b){const d=new Date(b+'T12:00:00');let a=EVENT.getFullYear()-d.getFullYear();const m=EVENT.getMonth()-d.getMonth();if(m<0||(m===0&&EVENT.getDate()<d.getDate()))a--;return a}
+function qr(text){try{const q=qrcode(0,'M');q.addData(text);q.make();return q.createSvgTag({cellSize:4,margin:0,scalable:true})}catch(e){return '<span class="mono" style="color:#111">'+esc(text)+'</span>'}}
+function toast(m){const el=document.getElementById('toast');el.textContent=m;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,3500)}
+const modLabel=m=>m==='21'?'21 km':'10,5 km';
+const catLabel=c=>({geral:'Geral','60':'60+',pcd:'PCD',cad:'Cadeirante'})[c];
+const priceOf=c=>c==='geral'?PRICE.geral:PRICE.reduzido;
+function totals(r,inst){const sub=r.base+r.fee,interest=inst>1?Math.round(sub*INST_RATE*(inst-1)*100)/100:0;return{sub,interest,total:sub+interest}}
+const byId=id=>DB.regs.find(r=>r.id===id);
+
+/* routing */
+const ROUTES=['inicio','inscricao','checkout','portal','organizador'];
+const route=()=>{const h=location.hash.slice(1);return ROUTES.includes(h)?h:'inicio'};
+const go=r=>{if(location.hash.slice(1)===r)render();else location.hash=r;window.scrollTo(0,0)};
+window.addEventListener('hashchange',()=>{render();window.scrollTo(0,0)});
+
+function render(){
+  const r=route();
+  let html;
+  if(r==='inscricao')html=pageForm();
+  else if(r==='checkout')html=pageCheckout();
+  else if(r==='portal')html=pagePortal();
+  else if(r==='organizador')html=pageOrg();
+  else html=pageLanding();
+  document.getElementById('app').innerHTML=html+'<p class="demo">Protótipo com dados da edição 2026. Data simulada: 20/08/2026. Nenhum pagamento é real.</p>';
+  tick();
+  if(r==='organizador'&&DB.org&&ORG.tab==='inscritos')orgTable();
+}
+
+/* ============ LANDING ============ */
+function header(){
+  return '<header class="top"><div class="wrap">'+
+  '<button class="logo" data-go="inicio">3 Fronteiras</button>'+
+  '<nav class="links" aria-label="Seções">'+[['inscricoes','Inscrições'],['prova','A prova'],['kit','Kit'],['regulamento','Regulamento'],['faq','Dúvidas']].map(([id,l])=>'<button data-scroll="'+id+'">'+l+'</button>').join('')+'</nav>'+
+  '<div class="top-r"><button class="btn btn-ghost btn-sm hide-xs" data-go="portal">Área do atleta</button><button class="btn btn-sm" data-go="inscricao">Inscreva-se</button></div>'+
+  '</div></header>';
+}
+function pageLanding(){
+  return header()+
+  '<section class="hero"><div class="wrap">'+
+    '<p class="eyebrow">Corrida internacional · 3 países · 1 manhã</p>'+
+    '<h1 style="margin-top:18px"><span>Meia Maratona</span><span>Internacional das</span><span>3 Fronteiras</span></h1>'+
+    '<div class="hero-meta"><span><b>11.10.2026</b></span><span>Largada 06h30</span><span>21 km e 10,5 km</span></div>'+
+    '<div class="hero-cta"><button class="btn btn-lg" data-go="inscricao">Inscreva-se</button>'+
+    '<div class="count" aria-label="Contagem regressiva"><div><b id="cd-d">--</b><span>dias</span></div><div><b id="cd-h">--</b><span>horas</span></div><div><b id="cd-m">--</b><span>min</span></div><div><b id="cd-s">--</b><span>seg</span></div></div></div>'+
+    '<div class="strip" aria-hidden="true"><div class="strip-line"><i></i><i></i><i></i></div>'+
+    '<div class="strip-lbl"><div><b>Paraguai</b><span class="muted">Ciudad del Este</span></div><div><b>Brasil</b><span class="muted">Foz do Iguaçu</span></div><div><b>Argentina</b><span class="muted">Puerto Iguazú</span></div></div></div>'+
+  '</div></section>'+
+
+  '<section class="sec" id="inscricoes"><div class="wrap sec-h"><div><p class="eyebrow">Inscrições abertas até 24/09</p><h2 style="margin-top:12px">Garanta sua vaga</h2></div>'+
+  '<div><div class="cols">'+
+    '<div><p class="eyebrow">Inscrição geral</p><p class="price">'+money(PRICE.geral)+'</p><p class="muted small">+ '+money(FEE)+' de taxa de serviço</p><p style="margin-top:16px">Para quem vai correr os 21 km ou os 10,5 km.</p><button class="btn btn-sm" style="margin-top:22px" data-go="inscricao" data-cat="geral">Inscrever</button></div>'+
+    '<div><p class="eyebrow">60+, PCD e cadeirantes</p><p class="price">'+money(PRICE.reduzido)+'</p><p class="muted small">+ '+money(FEE)+' de taxa de serviço</p><p style="margin-top:16px">PCD envia laudo médico válido na inscrição.</p><button class="btn btn-sm btn-ghost" style="margin-top:22px" data-go="inscricao" data-cat="60">Inscrever</button></div>'+
+  '</div><p class="muted small" style="margin-top:16px">Pix ou cartão de crédito, nacional ou internacional, em até '+MAX_INST+'x. As inscrições fecham antes se o limite técnico de atletas for atingido.</p></div></div></section>'+
+
+  '<section class="sec" id="prova"><div class="wrap sec-h"><div><p class="eyebrow">Domingo, 11 de outubro</p><h2 style="margin-top:12px">A prova</h2><p class="muted" style="margin-top:16px;max-width:34ch">Larga no Paraguai, cruza o Brasil e termina na Argentina, no Marco das Três Fronteiras.</p></div>'+
+  '<div class="cols">'+
+    '<div><div class="km">21<small> km</small></div><dl class="dl"><dt>Largada</dt><dd>06h30, Municipalidad de Ciudad del Este (PY)</dd><dt>Chegada</dt><dd>Marco das Três Fronteiras, Puerto Iguazú (AR)</dd></dl></div>'+
+    '<div><div class="km">10,5<small> km</small></div><dl class="dl"><dt>Largada</dt><dd>06h30, Secretaria Municipal de Turismo, Av. das Cataratas, 2330, Foz do Iguaçu (BR)</dd><dt>Chegada</dt><dd>Marco das Três Fronteiras, Puerto Iguazú (AR)</dd></dl></div>'+
+  '</div></div>'+
+  '<div class="wrap" style="margin-top:20px"><a class="link" href="https://www.mapmyrun.com/routes/view/6733633856/" target="_blank" rel="noopener" style="text-decoration:none">Ver percurso no mapa ↗</a></div></section>'+
+
+  '<section class="sec" id="kit"><div class="wrap sec-h"><div><p class="eyebrow">Antes da prova</p><h2 style="margin-top:12px">Retirada do kit</h2></div>'+
+  '<div class="prose"><p>Leve um <b>documento de identidade com foto</b> e o <b>QR code</b> da sua inscrição, que fica na Área do atleta.</p><p class="muted">Não há retirada de kit no dia da prova, nem em outro local ou data. Local e horários são enviados por e-mail na semana do evento.</p></div></div></section>'+
+
+  '<section class="sec" id="regulamento"><div class="wrap sec-h"><div><p class="eyebrow">Leia antes de se inscrever</p><h2 style="margin-top:12px">Regulamento</h2></div>'+
+  '<ul class="list"><li><span>Regulamento completo</span><span class="mono small muted">PDF</span></li><li><span>Termo de responsabilidade</span><span class="mono small muted">PDF</span></li><li><span>Resultados 21 km e 10,5 km</span><span class="small muted">após a prova</span></li></ul></div></section>'+
+
+  '<section class="sec" id="faq"><div class="wrap sec-h"><div><h2>Dúvidas</h2></div><div>'+
+  faq('Como eu pago?','Na última etapa você vai para o ambiente seguro do gateway de pagamento. Pix para quem tem conta em banco brasileiro, ou cartão de crédito em até '+MAX_INST+'x.')+
+  faq('Sou do Paraguai ou da Argentina. Posso me inscrever?','Sim. Use seu passaporte ou documento de identidade do seu país e pague com cartão de crédito. A cobrança é em reais e o seu banco converte.')+
+  faq('Que documento preciso enviar?','RG com menos de 10 anos, CNH válida ou passaporte. Estrangeiros: passaporte ou documento do país. Se for recusado, você recebe um e-mail e tem 30 dias para enviar outro.')+
+  faq('Posso cancelar?','Sim. Até 7 dias corridos depois da compra, o reembolso é integral (art. 49 do Código de Defesa do Consumidor). Cancele pela Área do atleta.')+
+  faq('Posso trocar de percurso ou corrigir meus dados?','Sim, pela Área do atleta. Alterações no pedido custam '+money(CHANGE_FEE)+'.')+
+  faq('Onde vejo minha inscrição?','Na Área do atleta. Você entra com o e-mail da inscrição e recebe um link de acesso, sem senha.')+
+  '</div></div></section>'+
+  '<footer><div class="wrap"><span>Realização: Paraná Chip e Eventos Esportivos</span><span class="row" style="gap:20px"><button class="link" data-go="portal">Área do atleta</button><button class="link" data-go="organizador">Organização</button></span></div></footer>';
+}
+const faq=(q,a)=>'<details><summary>'+esc(q)+'</summary><p>'+esc(a)+'</p></details>';
+
+/* ============ INSCRIÇÃO ============ */
+function flowHeader(label){
+  return '<header class="top"><div class="wrap"><button class="logo" data-go="inicio">3 Fronteiras</button><span class="muted small" style="margin-left:auto">'+label+'</span></div></header>';
+}
+function newDraft(cat){return{modality:'21',cat:cat||'geral',country:'BR',name:'',birth:'',sex:'',cpf:'',docType:'RG',docNum:'',email:'',phone:'',shirt:'',emergency:'',docFile:'',laudoFile:'',t1:false,t2:false}}
+const D=()=>S.draft||(S.draft=newDraft());
+function field(k,label,input,cls){const e=S.errors[k];return '<div class="f'+(e?' bad':'')+(cls?' '+cls:'')+'"><label for="i-'+k+'">'+label+'</label>'+input+(e?'<span class="err">'+esc(e)+'</span>':'')+'</div>'}
+const inp=(k,type,attrs)=>'<input id="i-'+k+'" data-f="'+k+'" type="'+(type||'text')+'" value="'+esc(D()[k])+'" '+(attrs||'')+'>';
+const sel=(k,opts,ph)=>'<select id="i-'+k+'" data-f="'+k+'">'+(ph?'<option value="">'+ph+'</option>':'')+opts.map(o=>{const[v,l]=Array.isArray(o)?o:[o,o];return '<option value="'+esc(v)+'"'+(D()[k]===v?' selected':'')+'>'+esc(l)+'</option>'}).join('')+'</select>';
+const file=k=>'<input id="i-'+k+'" data-f="'+k+'" type="file" accept="image/*,.pdf">'+(D()[k]?'<span class="small" style="color:var(--ok)">Anexado: '+esc(D()[k])+'</span>':'');
+const radio=(name,v,title,sub)=>'<label><input type="radio" name="'+name+'" data-f="'+name+'" value="'+v+'"'+(D()[name]===v?' checked':'')+'><b>'+title+'</b><span>'+sub+'</span></label>';
+
+function pageForm(){
+  const d=D(),br=d.country==='BR',base=priceOf(d.cat);
+  return flowHeader('Inscrição')+'<main class="wrap narrow flow">'+
+  '<button class="link" data-go="inicio">← Voltar ao site</button>'+
+  '<h1>Inscrição</h1><p class="muted">Meia Maratona Internacional das 3 Fronteiras · 11.10.2026</p>'+
+  '<form data-form="reg" novalidate style="margin-top:32px">'+
+  '<div class="block"><h2><span class="mono">01</span>Percurso</h2><div class="seg">'+radio('modality','21','21 km','Largada em Ciudad del Este')+radio('modality','10','10,5 km','Largada em Foz do Iguaçu')+'</div></div>'+
+  '<div class="block"><h2><span class="mono">02</span>Categoria</h2><div class="seg">'+radio('cat','geral','Geral',money(PRICE.geral))+radio('cat','60','60+',money(PRICE.reduzido))+radio('cat','pcd','PCD',money(PRICE.reduzido)+' · com laudo')+radio('cat','cad','Cadeirante',money(PRICE.reduzido))+'</div>'+(S.errors.cat?'<span class="small" style="color:var(--crit)">'+esc(S.errors.cat)+'</span>':'')+'</div>'+
+  '<div class="block"><div class="row between"><h2><span class="mono">03</span>Seus dados</h2><button type="button" class="link" data-act="fill">Preencher exemplo</button></div><div class="fields">'+
+    field('country','Nacionalidade',sel('country',COUNTRIES))+
+    field('name','Nome completo',inp('name','text','autocomplete="name"'))+
+    field('birth','Data de nascimento',inp('birth','date'))+
+    field('sex','Sexo',sel('sex',[['F','Feminino'],['M','Masculino']],'Selecione'))+
+    (br?field('cpf','CPF',inp('cpf','text','inputmode="numeric" placeholder="000.000.000-00"')):'')+
+    field('docType','Documento com foto',sel('docType',DOCS[d.country]))+
+    (br?'':field('docNum','Número do documento',inp('docNum')))+
+    field('email','E-mail',inp('email','email','autocomplete="email"'))+
+    field('phone','Celular',inp('phone','tel','autocomplete="tel" placeholder="'+(br?'+55 45 9…':'+595 / +54 …')+'"'))+
+    field('shirt','Camiseta',sel('shirt',['PP','P','M','G','GG','XGG'],'Tamanho'))+
+    field('emergency','Contato de emergência',inp('emergency','text','placeholder="Nome e telefone"'),'full')+
+    field('docFile','Foto do documento',file('docFile'),d.cat==='pcd'?'':'full')+
+    (d.cat==='pcd'?field('laudoFile','Laudo médico',file('laudoFile')):'')+
+  '</div></div>'+
+  '<div class="block"><h2><span class="mono">04</span>Termos</h2>'+
+    '<label class="chk"><input type="checkbox" data-f="t1"'+(d.t1?' checked':'')+'><span>Li e aceito o regulamento e o termo de responsabilidade.'+(S.errors.t1?'<span class="err">'+esc(S.errors.t1)+'</span>':'')+'</span></label>'+
+    '<label class="chk"><input type="checkbox" data-f="t2"'+(d.t2?' checked':'')+'><span>Autorizo o uso dos meus dados para a organização da prova (LGPD).'+(S.errors.t2?'<span class="err">'+esc(S.errors.t2)+'</span>':'')+'</span></label>'+
+  '</div>'+
+  '<div class="total"><div><p class="small muted">'+modLabel(d.modality)+' · '+catLabel(d.cat)+'</p><p class="small muted">'+money(base)+' + '+money(FEE)+' de taxa de serviço</p></div><b>'+money(base+FEE)+'</b></div>'+
+  '<button class="btn btn-lg btn-block" type="submit">Continuar para o pagamento</button>'+
+  '<p class="muted small" style="margin-top:12px;text-align:center">Você vai para o ambiente seguro do gateway de pagamento.</p>'+
+  '</form></main>';
+}
+function capture(){
+  const d=D();
+  document.querySelectorAll('[data-f]').forEach(el=>{const k=el.dataset.f;
+    if(el.type==='radio'){if(el.checked)d[k]=el.value}
+    else if(el.type==='checkbox')d[k]=el.checked;
+    else if(el.type==='file'){if(el.files&&el.files[0])d[k]=el.files[0].name}
+    else d[k]=el.value});
+}
+function validate(){
+  const d=D(),e={},req='Preencha este campo.';
+  ['name','birth','sex','email','phone','shirt','emergency'].forEach(k=>{if(!String(d[k]).trim())e[k]=req});
+  if(d.country==='BR'){if(!cpfOk(d.cpf))e.cpf='CPF inválido. Confira os 11 dígitos.'}else if(!d.docNum.trim())e.docNum=req;
+  if(d.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email))e.email='E-mail inválido.';
+  if(!d.docFile)e.docFile='Anexe a foto do documento.';
+  if(d.cat==='pcd'&&!d.laudoFile)e.laudoFile='Anexe o laudo médico.';
+  if(d.cat==='60'&&d.birth&&ageAt(d.birth)<60)e.cat='A categoria 60+ exige 60 anos ou mais no dia da prova.';
+  if(!d.t1)e.t1='Aceite para continuar.';if(!d.t2)e.t2='Aceite para continuar.';
+  const key=d.country==='BR'?d.cpf.replace(/\D/g,''):d.docNum.trim();
+  if(key&&DB.regs.some(r=>r.status==='pago'&&(r.country==='BR'?r.cpf.replace(/\D/g,''):r.docNum)===key)){if(d.country==='BR')e.cpf='Já existe uma inscrição paga com este CPF.';else e.docNum='Já existe uma inscrição paga com este documento.'}
+  S.errors=e;return !Object.keys(e).length;
+}
+function fill(){
+  const d=D(),br=d.country==='BR';
+  Object.assign(d,{name:br?'Marina Kowalski Ferreira':'Rocío Benítez Duarte',birth:d.cat==='60'?'1961-04-12':'1991-07-22',sex:'F',cpf:br?genCPF():'',docType:DOCS[d.country][0],docNum:br?'':String(Math.floor(1e6+Math.random()*8e6)),
+    email:(br?'marina':'rocio')+Math.floor(100+Math.random()*900)+'@exemplo.com',phone:br?'+55 45 99812-4471':'+595 983 112 334',shirt:'M',emergency:br?'Paulo Ferreira · +55 45 99901-2233':'Hugo Benítez · +595 983 500 210',
+    docFile:br?'rg_frente_verso.jpg':'pasaporte.jpg',laudoFile:d.cat==='pcd'?'laudo.pdf':'',t1:true,t2:true});
+  S.errors={};
+}
+
+/* ============ CHECKOUT DO GATEWAY (simulado) ============ */
+function pageCheckout(){
+  const r=byId(S.checkout);
+  if(!r||r.status!=='aguardando'){return flowHeader('Pagamento')+'<main class="wrap narrow flow"><h1>Nada para pagar</h1><p class="muted">Comece pela inscrição.</p><button class="btn" style="margin-top:20px" data-go="inscricao">Ir para a inscrição</button></main>'}
+  const br=r.country==='BR';if(!br)S.pay='card';
+  const t=totals(r,S.pay==='card'?S.inst:1);
+  let body='';
+  if(S.pay==='pix'){
+    const code='00020126580014BR.GOV.BCB.PIX0136'+r.id+'-exemplo520400005303986540'+t.total.toFixed(2)+'5802BR5925PARANA CHIP EVENTOS6013FOZ DO IGUACU6304ABCD';
+    body='<div class="row" style="align-items:flex-start;gap:24px"><div class="qr">'+qr(code)+'</div><div style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:12px">'+
+    '<p>Abra o app do seu banco, escolha Pix e leia o QR code.</p><p class="small muted">O código expira em 30 minutos. Até lá sua vaga fica reservada.</p>'+
+    '<div class="pixcode" id="pixcode">'+esc(code)+'</div><div class="row"><button class="btn btn-ghost btn-sm" data-act="copy">Copiar código</button></div></div></div>'+
+    '<button class="btn btn-accent btn-lg btn-block" style="margin-top:24px" data-act="pay-pix">Simular Pix recebido</button>';
+  }else{
+    const opts=[];for(let i=1;i<=MAX_INST;i++){const ti=totals(r,i);opts.push('<option value="'+i+'"'+(S.inst===i?' selected':'')+'>'+i+'x de '+money(ti.total/i)+(i===1?' sem juros':' (total '+money(ti.total)+')')+'</option>')}
+    const ce=k=>S.errors[k]?'<span class="err">'+S.errors[k]+'</span>':'';
+    body='<form data-form="card" novalidate><div class="fields">'+
+    '<div class="f full'+(S.errors.cn?' bad':'')+'"><label for="cn">Número do cartão</label><input id="cn" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000">'+ce('cn')+'</div>'+
+    '<div class="f full'+(S.errors.ch?' bad':'')+'"><label for="ch">Nome no cartão</label><input id="ch" autocomplete="cc-name">'+ce('ch')+'</div>'+
+    '<div class="f'+(S.errors.cx?' bad':'')+'"><label for="cx">Validade</label><input id="cx" placeholder="MM/AA" autocomplete="cc-exp">'+ce('cx')+'</div>'+
+    '<div class="f'+(S.errors.cv?' bad':'')+'"><label for="cv">CVV</label><input id="cv" inputmode="numeric" placeholder="123" autocomplete="cc-csc">'+ce('cv')+'</div>'+
+    '<div class="f full"><label for="inst">Parcelas</label><select id="inst" data-act-change="inst">'+opts.join('')+'</select></div></div>'+
+    (S.cardErr?'<p class="alert" style="margin-top:16px">'+esc(S.cardErr)+'</p>':'')+
+    '<p class="small muted" style="margin-top:14px">Teste: 4242 4242 4242 4242 aprova · 4000 0000 0000 0002 é recusado.</p>'+
+    '<button class="btn btn-accent btn-lg btn-block" style="margin-top:16px" type="submit">Pagar '+money(t.total)+'</button></form>';
+  }
+  return '<div class="gw-bar"><div class="wrap"><span class="gw-lock">🔒 Pagamento seguro</span><span class="muted">Ambiente do gateway de pagamento</span></div></div>'+
+  '<main class="wrap gw"><div class="card">'+
+  '<p class="note" style="margin-bottom:20px">Nesta etapa o atleta sai do seu site e paga no checkout do gateway (por exemplo, Checkout Pro do Mercado Pago ou Stripe Checkout). Você não constrói esta tela: o gateway entrega pronta e devolve o atleta para a Área do atleta.</p>'+
+  '<div class="tabs"><button data-act="method" data-v="pix" aria-pressed="'+(S.pay==='pix')+'"'+(br?'':' disabled title="Pix exige conta em banco brasileiro"')+'>Pix</button><button data-act="method" data-v="card" aria-pressed="'+(S.pay==='card')+'">Cartão de crédito</button></div>'+
+  (br?'':'<p class="small muted" style="margin:-8px 0 16px">Pix só funciona com conta em banco brasileiro. Cartões internacionais são aceitos.</p>')+
+  body+'</div>'+
+  '<aside class="card"><p class="eyebrow">Paraná Chip e Eventos Esportivos</p><p style="font-weight:600;margin:8px 0 16px">Meia Maratona Internacional das 3 Fronteiras</p><div class="sum">'+
+  '<div><span>'+modLabel(r.modality)+' · '+catLabel(r.cat)+'</span><span>'+money(r.base)+'</span></div><div><span>Taxa de serviço</span><span>'+money(r.fee)+'</span></div>'+
+  (t.interest?'<div><span>Juros ('+S.inst+'x)</span><span>'+money(t.interest)+'</span></div>':'')+
+  '<div class="t"><span>Total</span><span>'+money(t.total)+'</span></div></div>'+
+  '<p class="small muted" style="margin-top:16px">'+esc(r.name)+'<br>'+esc(r.email)+'</p>'+
+  '<button class="link" style="margin-top:16px" data-act="abandon">Cancelar e voltar ao site</button></aside></main>';
+}
+function confirmPayment(r,method,inst){
+  const t=totals(r,inst);
+  const bibs=DB.regs.filter(x=>x.modality===r.modality&&x.bib).map(x=>x.bib);
+  Object.assign(r,{status:'pago',method,inst,interest:t.interest,total:t.total,paidAt:simNow(),bib:bibs.length?Math.max.apply(null,bibs)+1:(r.modality==='21'?101:5001)});
+  DB.session=r.email.toLowerCase();save();
+  S.checkout=null;S.flash='Pagamento aprovado. Esta é a sua Área do atleta.';S.cardErr='';S.errors={};S.draft=null;
+  go('portal');
+}
+
+/* ============ PORTAL DO ATLETA ============ */
+function pagePortal(){
+  const top='<header class="top"><div class="wrap"><button class="logo" data-go="inicio">3 Fronteiras</button><div class="top-r">'+(DB.session?'<span class="small muted hide-xs">'+esc(DB.session)+'</span><button class="btn btn-ghost btn-sm" data-act="logout">Sair</button>':'<button class="btn btn-sm" data-go="inscricao">Inscreva-se</button>')+'</div></div></header>';
+  if(!DB.session){
+    const L=S.login;
+    return top+'<main class="wrap narrow flow"><p class="eyebrow">Área do atleta</p><h1>Entrar</h1>'+
+    (L.sent?'<p style="margin-top:12px">Enviamos um link de acesso para <b>'+esc(L.email)+'</b>. Ele vale por 15 minutos.</p><div class="row" style="margin-top:24px"><button class="btn" data-act="magic">Abrir link do e-mail (simulação)</button><button class="link" data-act="relogin">Usar outro e-mail</button></div>'
+    :'<p class="muted" style="margin-top:8px">Digite o e-mail usado na inscrição. Mandamos um link de acesso, sem senha.</p><form data-form="login" novalidate style="margin-top:28px;display:flex;flex-direction:column;gap:14px"><div class="f'+(L.err?' bad':'')+'"><label for="lg">E-mail</label><input id="lg" type="email" autocomplete="email" value="'+esc(L.email)+'">'+(L.err?'<span class="err">'+esc(L.err)+'</span>':'')+'</div><button class="btn btn-lg" type="submit">Receber link de acesso</button></form>'+
+    (DB.regs.some(r=>r.status==='pago')?'':'<p class="note" style="margin-top:20px">Ainda não há inscrições neste protótipo. Faça uma primeiro.</p>'))+'</main>';
+  }
+  const mine=DB.regs.filter(r=>r.email.toLowerCase()===DB.session&&(r.status==='pago'||r.status==='reembolsado')).sort((a,b)=>b.created-a.created);
+  let h=top+'<main class="wrap flow" style="max-width:820px">';
+  if(S.flash){h+='<p class="note" style="color:var(--ok);margin-bottom:24px">'+esc(S.flash)+'</p>';S.flash=''}
+  h+='<p class="eyebrow">Área do atleta</p><h1>Minhas inscrições</h1>';
+  if(!mine.length)h+='<p class="muted">Nenhuma inscrição com este e-mail.</p>';
+  mine.forEach(r=>{h+=regCard(r)});
+  return h+'</main>';
+}
+function regCard(r){
+  const paid=r.status==='pago',within=simNow()-r.created<=7*DAY;
+  const st=paid?'<span class="badge b-ok">Confirmada</span>':'<span class="badge b-muted">Cancelada · reembolsada</span>';
+  const doc={analise:'<span class="badge b-warn">Em análise</span>',aprovado:'<span class="badge b-ok">Aprovado</span>'}[r.doc]||'';
+  let h='<section style="margin-top:32px"><div class="row between" style="margin-bottom:16px">'+st+'<span class="mono small muted">'+esc(r.protocol)+'</span></div>';
+  if(paid)h+='<div class="bib"><div class="qr">'+qr(r.protocol)+'</div><div style="min-width:0"><p class="eyebrow">Número de peito</p><p class="n">'+r.bib+'</p><p style="margin-top:8px;font-weight:600">'+esc(r.name)+'</p><p class="small muted">'+modLabel(r.modality)+' · '+catLabel(r.cat)+' · camiseta '+esc(r.shirt)+'</p><p class="small" style="margin-top:12px">Mostre este QR code e um documento com foto na retirada do kit.</p></div></div>';
+  h+='<dl class="kv" style="margin-top:24px">'+
+    '<dt>Prova</dt><dd>11/10/2026 · largada 06h30 · '+(r.modality==='21'?'Ciudad del Este (PY)':'Foz do Iguaçu (BR)')+'</dd>'+
+    (paid?'<dt>Documento</dt><dd>'+esc(r.docType)+' · '+esc(r.docFile)+' '+doc+'</dd>':'')+
+    '<dt>Pagamento</dt><dd>'+money(r.total)+' · '+(r.method==='pix'?'Pix':'cartão em '+r.inst+'x')+' · '+fmtDT(r.paidAt)+'</dd>'+
+    (r.refundedAt?'<dt>Reembolso</dt><dd>'+money(r.total)+' pedido em '+fmtDT(r.refundedAt)+'</dd>':'')+
+    '<dt>Contato</dt><dd>'+esc(r.phone)+'</dd><dt>Emergência</dt><dd>'+esc(r.emergency)+'</dd></dl>';
+  if(paid){
+    if(S.cancel===r.id)h+='<div class="note" style="margin-top:24px;color:var(--fg)">'+(within?'Você está no prazo de 7 dias. O reembolso de <b>'+money(r.total)+'</b> é integral e volta pelo mesmo meio de pagamento.<div class="row" style="margin-top:12px"><button class="btn btn-sm" style="background:var(--crit);border-color:var(--crit);color:var(--bg)" data-act="cancel-ok" data-id="'+r.id+'">Confirmar cancelamento</button><button class="btn btn-ghost btn-sm" data-act="cancel-no">Manter inscrição</button></div>':'O prazo de 7 dias para reembolso integral terminou. Fale com a organização.<div class="row" style="margin-top:12px"><button class="btn btn-ghost btn-sm" data-act="cancel-no">Voltar</button></div>')+'</div>';
+    else h+='<div class="row" style="margin-top:24px"><button class="btn btn-ghost btn-sm" data-act="receipt">Reenviar comprovante</button><button class="btn btn-ghost btn-sm" data-act="change">Alterar dados ('+money(CHANGE_FEE)+')</button><button class="link" style="color:var(--crit);margin-left:auto" data-act="cancel" data-id="'+r.id+'">Cancelar inscrição</button></div>';
+  }
+  return h+'</section>';
+}
+
+/* ============ PAINEL DO ORGANIZADOR ============ */
+const LIMIT=2500,PAIDS=['pago','contestado'];
+const ORG={tab:'geral',q:'',fmod:'',fst:'',fdoc:'',page:0,sel:null,confirm:false,kitQ:'',kitSel:null,disp:null};
+const OTABS=[['geral','Visão geral'],['inscritos','Inscritos'],['documentos','Documentos'],['financeiro','Financeiro'],['contestacoes','Contestações'],['kits','Entrega de kits']];
+const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const gwFee=r=>r.method==='pix'?r.total*.0099:r.total*.0399+.39;
+const flagTxt={BR:'Brasil',PY:'Paraguai',AR:'Argentina',XX:'Outro'};
+const stTxt={pago:['Confirmada','b-ok'],reembolsado:['Reembolsada','b-muted'],contestado:['Em contestação','b-crit'],estornado:['Estornada','b-crit'],aguardando:['Aguardando pagamento','b-warn'],abandonado:['Abandonada','b-muted']};
+const docTxt={analise:['Em análise','b-warn'],aprovado:['Aprovado','b-ok'],recusado:['Recusado','b-crit']};
+const badge=(m,k)=>{const x=m[k]||[k,'b-muted'];return '<span class="badge '+x[1]+'">'+x[0]+'</span>'};
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let x=Math.imul(a^a>>>15,1|a);x=x+Math.imul(x^x>>>7,61|x)^x;return((x^x>>>14)>>>0)/4294967296}}
+
+function seedDemo(){
+  const rnd=mulberry32(11),pick=a=>a[Math.floor(rnd()*a.length)];
+  const N={BR:{f:['Ana','Bruno','Carla','Diego','Juliana','Lucas','Mariana','Rafael','Thiago','Vanessa','Gustavo','Larissa','Felipe','Camila'],l:['Silva','Santos','Oliveira','Souza','Costa','Ferreira','Almeida','Ribeiro','Schmidt','Zanella','Bortolini'],c:'+55 45 9'},
+    PY:{f:['Ramón','Lorena','Derlis','Fátima','Hugo','Rocío'],l:['Benítez','Giménez','Ortiz','Duarte','Cáceres','Villalba'],c:'+595 61 '},
+    AR:{f:['Facundo','Agustina','Martín','Camila','Joaquín','Lucía'],l:['González','Fernández','López','Romero','Sosa'],c:'+54 3757 '}};
+  const start=new Date('2026-05-04T09:00:00-03:00').getTime(),out=[];
+  for(let i=0;i<640;i++){
+    const x=rnd(),country=x<.72?'BR':x<.87?'PY':'AR',P=N[country],first=pick(P.f),last=pick(P.l);
+    const created=Math.round(rnd()<.12?start+rnd()*2*DAY:start+(SIM_TODAY-start)*Math.pow(rnd(),.7));
+    const y=rnd(),cat=y<.09?'60':y<.11?'pcd':y<.115?'cad':'geral';
+    const method=country==='BR'&&rnd()<.6?'pix':'card',inst=method==='card'&&rnd()<.4?2+Math.floor(rnd()*5):1;
+    const base=priceOf(cat),sub=base+FEE,interest=inst>1?Math.round(sub*INST_RATE*(inst-1)*100)/100:0;
+    const status=rnd()<.95?'pago':'reembolsado',recent=SIM_TODAY-created<12*DAY;
+    const doc=status!=='pago'?'aprovado':recent&&rnd()<.6?'analise':rnd()<.03?'recusado':'aprovado';
+    out.push({id:'d'+i,demo:true,name:first+' '+last,email:norm(first)+'.'+norm(last).replace(/[^a-z]/g,'')+i+'@exemplo.com',phone:P.c+String(Math.floor(rnd()*1e8)).padStart(8,'0'),
+      country,cpf:country==='BR'?genCPF(rnd):'',docType:DOCS[country][0],docNum:country==='BR'?'':String(1e6+Math.floor(rnd()*8e6)),docFile:norm(DOCS[country][0]).replace(/[^a-z]+/g,'_')+'_'+(i+1)+'.jpg',
+      doc,docReason:doc==='recusado'?pick(['Documento ilegível','RG com mais de 10 anos']):'',modality:rnd()<.58?'21':'10',cat,laudoFile:cat==='pcd'?'laudo.pdf':'',
+      shirt:pick(['PP','P','P','M','M','M','G','G','GG','XGG']),emergency:pick(P.f)+' '+last+' · '+P.c+'…',base,fee:FEE,interest,total:sub+interest,status,method,inst,
+      created,paidAt:created+3e5,refundedAt:status==='reembolsado'?created+3*DAY:null,bib:null,kit:false,kitAt:null,dispute:null,
+      ip:(country==='BR'?'177.':country==='PY'?'181.':'186.')+Math.floor(rnd()*255)+'.'+Math.floor(rnd()*255)+'.'+Math.floor(rnd()*255)});
+  }
+  out.sort((a,b)=>a.created-b.created);
+  const bib={'21':101,'10':5001};
+  out.forEach((r,i)=>{r.protocol='3F26-'+String(i+1).padStart(6,'0');if(r.status==='pago')r.bib=bib[r.modality]++});
+  const cards=out.filter(r=>r.status==='pago'&&r.method==='card'&&r.created<SIM_TODAY-20*DAY);
+  [['Compra não reconhecida pelo titular',4],['Cancelamento não processado',2],['Fraude: cartão usado sem autorização',8]].forEach(([reason,dl],k)=>{
+    const r=cards[k*9+3];r.status='contestado';r.dispute={reason,openedAt:SIM_TODAY-(10-dl)*DAY,deadline:SIM_TODAY+dl*DAY,status:'aberta',amount:r.total}});
+  return out;
+}
+function ensureSeed(){
+  if(DB.seeded)return;
+  const mine=DB.regs;DB.regs=seedDemo();
+  mine.forEach(r=>{r.protocol='3F26-'+String(DB.regs.length+1).padStart(6,'0');if(r.status==='pago'){const xs=DB.regs.filter(x=>x.modality===r.modality&&x.bib).map(x=>x.bib);r.bib=Math.max.apply(null,xs)+1}
+    r.ip=r.ip||'177.84.12.201';r.kit=!!r.kit;r.dispute=r.dispute||null;DB.regs.push(r)});
+  DB.seeded=true;save();
+}
+
+function pageOrg(){
+  const top='<header class="top"><div class="wrap"><button class="logo" data-go="inicio">3 Fronteiras</button><span class="small muted">Organização</span>'+
+    (DB.org?'<div class="top-r"><span class="small muted hide-xs">Paraná Chip</span><button class="btn btn-ghost btn-sm" data-oa="logout">Sair</button></div>':'')+'</div></header>';
+  if(!DB.org)return top+'<main class="wrap narrow flow"><p class="eyebrow">Acesso restrito</p><h1>Painel da organização</h1><p class="muted" style="margin-top:8px">Só a equipe da prova entra aqui. No sistema real, cada pessoa tem login próprio e permissões (financeiro, documentos, balcão de kits).</p>'+
+    '<form data-form="olog" novalidate style="margin-top:28px;display:flex;flex-direction:column;gap:14px"><div class="f"><label for="oe">E-mail da equipe</label><input id="oe" type="email" value="organizacao@paranachip.com.br"></div><button class="btn btn-lg" type="submit">Entrar (simulação)</button></form></main>';
+  const regs=DB.regs,paid=regs.filter(r=>PAIDS.includes(r.status));
+  const nDoc=paid.filter(r=>r.doc==='analise').length,nDisp=regs.filter(r=>r.dispute&&r.dispute.status==='aberta').length;
+  const tabs='<nav class="otabs" aria-label="Seções do painel">'+OTABS.map(([k,l])=>'<button data-oa="tab" data-v="'+k+'" aria-current="'+(ORG.tab===k)+'">'+l+(k==='documentos'&&nDoc?'<span class="cnt">'+nDoc+'</span>':'')+(k==='contestacoes'&&nDisp?'<span class="cnt">'+nDisp+'</span>':'')+'</button>').join('')+'</nav>';
+  const body={geral:oGeral,inscritos:oInscritos,documentos:oDocs,financeiro:oFin,contestacoes:oDisp,kits:oKits}[ORG.tab]();
+  return top+'<main class="wrap" style="padding-bottom:80px">'+tabs+body+'</main>'+(ORG.sel?oModal():'');
+}
+function fin(){
+  let gross=0,gw=0,refunds=0,disputed=0,lost=0,service=0,pix=0,card=0,np=0,nc=0;
+  DB.regs.forEach(r=>{
+    if(['pago','contestado','reembolsado','estornado'].includes(r.status)){gross+=r.total;gw+=gwFee(r);if(r.method==='pix'){pix+=r.total;np++}else{card+=r.total;nc++}}
+    if(r.status==='pago')service+=r.fee;if(r.status==='reembolsado')refunds+=r.total;if(r.status==='contestado')disputed+=r.total;if(r.status==='estornado')lost+=r.total});
+  return{gross,gw,refunds,disputed,lost,service,pix,card,np,nc,net:gross-gw-refunds-disputed-lost};
+}
+function split(rows){const tot=rows.reduce((s,r)=>s+r[1],0)||1;return '<div class="split">'+rows.map(([l,v])=>'<div><span>'+l+'</span><span class="tr"><i style="width:'+(v/tot*100).toFixed(1)+'%"></i></span><span class="v">'+v+'</span></div>').join('')+'</div>'}
+function oGeral(){
+  const regs=DB.regs,paid=regs.filter(r=>PAIDS.includes(r.status)),F=fin();
+  const start=new Date('2026-05-04T00:00:00-03:00').getTime(),weeks=Math.ceil((SIM_TODAY-start)/(7*DAY)),w=Array(weeks).fill(0);
+  regs.forEach(r=>{if(['abandonado','aguardando'].includes(r.status))return;const i=Math.floor((r.created-start)/(7*DAY));if(i>=0&&i<weeks)w[i]++});
+  const mx=Math.max.apply(null,w)||1;
+  const nDoc=paid.filter(r=>r.doc==='analise').length,disp=regs.filter(r=>r.dispute&&r.dispute.status==='aberta');
+  const nextDl=disp.length?Math.min.apply(null,disp.map(r=>r.dispute.deadline)):0;
+  const cnt=(k,v)=>paid.filter(r=>r[k]===v).length;
+  const days=Math.ceil((EVENT-SIM_TODAY)/DAY);
+  return '<div class="oh"><div><p class="eyebrow">Faltam '+days+' dias · inscrições até 24/09</p><h1 style="margin-top:8px">Visão geral</h1></div></div>'+
+  '<div class="stats"><div><span>Inscritos confirmados</span><b>'+paid.length.toLocaleString('pt-BR')+'</b><span>de '+LIMIT.toLocaleString('pt-BR')+' vagas</span></div>'+
+  '<div><span>Vagas restantes</span><b>'+(LIMIT-paid.length).toLocaleString('pt-BR')+'</b><span>'+(paid.length/LIMIT*100).toFixed(0)+'% vendido</span></div>'+
+  '<div><span>Receita bruta</span><b>'+money(F.gross)+'</b><span>Pix e cartão</span></div>'+
+  '<div><span>Líquido</span><b>'+money(F.net)+'</b><span>após taxas, reembolsos e contestações</span></div></div>'+
+  '<div class="ogrid"><div><h3>Precisa de você</h3><div class="todo">'+
+    '<button data-oa="tab" data-v="documentos"><span>Documentos para analisar</span><span class="mono">'+nDoc+'</span></button>'+
+    '<button data-oa="tab" data-v="contestacoes"><span>Contestações abertas'+(nextDl?' · próximo prazo '+fmtD(nextDl):'')+'</span><span class="mono">'+disp.length+'</span></button>'+
+    '<button data-oa="tab" data-v="kits"><span>Kits entregues</span><span class="mono">'+paid.filter(r=>r.kit).length+' / '+paid.length+'</span></button></div></div>'+
+  '<div><h3>Inscrições por semana</h3><div class="bars" role="img" aria-label="Inscrições por semana desde 04/05">'+w.map((v,i)=>'<i'+(i===weeks-1?' class="part"':'')+' style="height:'+(v/mx*100).toFixed(1)+'%" title="'+v+' inscrições"></i>').join('')+'</div><div class="bars-x"><span>04/05</span><span>pico: '+mx+'/semana</span><span>esta semana</span></div></div></div>'+
+  '<div class="ogrid"><div><h3>Percurso</h3>'+split([['21 km',cnt('modality','21')],['10,5 km',cnt('modality','10')]])+'</div>'+
+  '<div><h3>País</h3>'+split([['Brasil',cnt('country','BR')],['Paraguai',cnt('country','PY')],['Argentina',cnt('country','AR')],['Outros',cnt('country','XX')]])+'</div>'+
+  '<div><h3>Camisetas (pedido ao fornecedor)</h3>'+split(['PP','P','M','G','GG','XGG'].map(s=>[s,cnt('shirt',s)]))+'</div></div>';
+}
+function oInscritos(){
+  const o=(v,l,c)=>'<option value="'+v+'"'+(c===v?' selected':'')+'>'+l+'</option>';
+  return '<div class="oh"><div><p class="eyebrow">'+DB.regs.length+' registros</p><h1 style="margin-top:8px">Inscritos</h1></div><button class="btn btn-ghost btn-sm" data-oa="csv">Copiar planilha (CSV)</button></div>'+
+  '<div class="filters"><div class="f grow"><label for="oq">Buscar</label><input id="oq" data-of="q" value="'+esc(ORG.q)+'" placeholder="Nome, e-mail, CPF, protocolo ou nº de peito"></div>'+
+  '<div class="f"><label for="om">Percurso</label><select id="om" data-of="fmod">'+o('','Todos',ORG.fmod)+o('21','21 km',ORG.fmod)+o('10','10,5 km',ORG.fmod)+'</select></div>'+
+  '<div class="f"><label for="os">Pagamento</label><select id="os" data-of="fst">'+o('','Todos',ORG.fst)+Object.keys(stTxt).map(k=>o(k,stTxt[k][0],ORG.fst)).join('')+'</select></div>'+
+  '<div class="f"><label for="od">Documento</label><select id="od" data-of="fdoc">'+o('','Todos',ORG.fdoc)+Object.keys(docTxt).map(k=>o(k,docTxt[k][0],ORG.fdoc)).join('')+'</select></div></div><div id="otable"></div>';
+}
+function oFiltered(){
+  const q=norm(ORG.q).trim(),qd=q.replace(/\D/g,'');
+  return DB.regs.filter(r=>(!ORG.fmod||r.modality===ORG.fmod)&&(!ORG.fst||r.status===ORG.fst)&&(!ORG.fdoc||r.doc===ORG.fdoc)&&
+    (!q||norm([r.name,r.email,r.protocol,r.bib].join(' ')).includes(q)||(qd.length>=3&&r.cpf&&r.cpf.replace(/\D/g,'').includes(qd)))).sort((a,b)=>b.created-a.created);
+}
+function orgTable(){
+  const el=document.getElementById('otable');if(!el)return;
+  const rows=oFiltered(),per=30,pages=Math.max(1,Math.ceil(rows.length/per));if(ORG.page>=pages)ORG.page=pages-1;
+  el.innerHTML='<div class="tbl"><table><thead><tr><th>Peito</th><th>Atleta</th><th>Percurso</th><th>País</th><th>Pagamento</th><th>Documento</th><th class="r">Total</th></tr></thead><tbody>'+
+  (rows.length?rows.slice(ORG.page*per,ORG.page*per+per).map(r=>'<tr class="click" data-oa="open" data-id="'+r.id+'" tabindex="0"><td class="mono"><b>'+(r.bib||'—')+'</b></td><td><b style="font-weight:600">'+esc(r.name)+'</b><br><span class="small muted">'+esc(r.protocol)+' · '+fmtD(r.created)+'</span></td><td>'+modLabel(r.modality)+'<br><span class="small muted">'+catLabel(r.cat)+'</span></td><td>'+flagTxt[r.country]+'</td><td>'+badge(stTxt,r.status)+'<br><span class="small muted">'+(r.method?(r.method==='pix'?'Pix':'Cartão '+r.inst+'x'):'—')+'</span></td><td>'+(PAIDS.includes(r.status)?badge(docTxt,r.doc):'<span class="muted">—</span>')+'</td><td class="r mono">'+money(r.total)+'</td></tr>').join('')
+  :'<tr><td colspan="7" class="muted" style="padding:32px 0;text-align:center">Ninguém com esses filtros.</td></tr>')+
+  '</tbody></table></div><div class="pager"><span>'+rows.length+' resultados · página '+(ORG.page+1)+' de '+pages+'</span><div class="row"><button class="btn btn-ghost btn-sm" data-oa="page" data-v="-1"'+(ORG.page?'':' disabled')+'>Anterior</button><button class="btn btn-ghost btn-sm" data-oa="page" data-v="1"'+(ORG.page<pages-1?'':' disabled')+'>Próxima</button></div></div>';
+}
+const fmtD=ms=>new Date(ms).toLocaleDateString('pt-BR');
+const REASONS=['Documento ilegível','RG com mais de 10 anos','Nome diferente do cadastro','Documento vencido','Laudo PCD inválido'];
+function oDocs(){
+  const list=DB.regs.filter(r=>PAIDS.includes(r.status)&&r.doc==='analise').sort((a,b)=>a.created-b.created);
+  const refused=DB.regs.filter(r=>PAIDS.includes(r.status)&&r.doc==='recusado');
+  return '<div class="oh"><div><p class="eyebrow">Mais antigos primeiro</p><h1 style="margin-top:8px">Documentos</h1></div><span class="mono small muted">'+list.length+' na fila</span></div>'+
+  '<p class="muted small" style="max-width:62ch;margin-bottom:24px">Aceitos: RG com menos de 10 anos, CNH válida ou passaporte; estrangeiros, documento do país. Ao recusar, o atleta recebe um e-mail e tem 30 dias para mandar outro.</p>'+
+  (list.length?list.slice(0,25).map(r=>'<div class="item"><div style="min-width:0"><b style="font-weight:600">'+esc(r.name)+'</b> <span class="small muted">· '+flagTxt[r.country]+'</span><br><span class="small muted">'+esc(r.docType)+' · '+(r.cpf?'CPF '+esc(r.cpf):'nº '+esc(r.docNum))+' · <span class="mono">'+esc(r.docFile)+'</span>'+(r.laudoFile?' · laudo: '+esc(r.laudoFile):'')+'</span></div>'+
+    '<div class="row"><button class="btn btn-sm" data-oa="doc-ok" data-id="'+r.id+'">Aprovar</button><select id="rr-'+r.id+'" aria-label="Motivo da recusa">'+REASONS.map(x=>'<option>'+x+'</option>').join('')+'</select><button class="btn btn-ghost btn-sm" data-oa="doc-no" data-id="'+r.id+'">Recusar</button></div></div>').join('')+(list.length>25?'<p class="small muted" style="margin-top:12px">Mostrando 25 de '+list.length+'.</p>':'')
+  :'<p class="muted">Fila vazia. Documentos de novas inscrições aparecem aqui.</p>')+
+  (refused.length?'<p class="osec" style="margin-top:48px">Recusados, aguardando reenvio</p>'+refused.map(r=>'<div class="item"><div><b style="font-weight:600">'+esc(r.name)+'</b><br><span class="small muted">'+esc(r.docReason)+' · '+esc(r.email)+'</span></div><button class="btn btn-ghost btn-sm" data-oa="remind" data-id="'+r.id+'">Lembrar por e-mail</button></div>').join(''):'');
+}
+function oFin(){
+  const F=fin();
+  return '<div class="oh"><div><p class="eyebrow">Conciliação com o gateway</p><h1 style="margin-top:8px">Financeiro</h1></div></div>'+
+  '<div class="stats"><div><span>Bruto</span><b>'+money(F.gross)+'</b><span>'+(F.np+F.nc)+' pagamentos</span></div><div><span>Taxas do gateway</span><b>'+money(F.gw)+'</b><span>'+(F.gw/F.gross*100).toFixed(2).replace('.',',')+'% do bruto</span></div>'+
+  '<div><span>Reembolsos</span><b>'+money(F.refunds)+'</b><span>cancelamentos em 7 dias</span></div><div><span>Líquido</span><b>'+money(F.net)+'</b><span>o que entra na sua conta</span></div></div>'+
+  '<div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))"><div><span>Taxa de serviço arrecadada</span><b>'+money(F.service)+'</b><span>receita sua, '+money(FEE)+' por inscrição</span></div><div><span>Em contestação</span><b>'+money(F.disputed)+'</b><span>retido até o banco decidir</span></div><div><span>Perdido em contestações</span><b>'+money(F.lost)+'</b><span>devolvido ao titular</span></div></div>'+
+  '<p class="osec">Por forma de pagamento</p><div class="tbl"><table><thead><tr><th>Forma</th><th class="r">Pagamentos</th><th class="r">Volume</th><th class="r">Taxa</th><th class="r">Custo</th></tr></thead><tbody>'+
+  '<tr><td>Pix</td><td class="r mono">'+F.np+'</td><td class="r mono">'+money(F.pix)+'</td><td class="r mono">0,99%</td><td class="r mono">'+money(F.pix*.0099)+'</td></tr>'+
+  '<tr><td>Cartão</td><td class="r mono">'+F.nc+'</td><td class="r mono">'+money(F.card)+'</td><td class="r mono">3,99% + R$ 0,39</td><td class="r mono">'+money(F.card*.0399+F.nc*.39)+'</td></tr></tbody></table></div>'+
+  '<p class="small muted" style="margin-top:12px">Taxas de exemplo. No sistema real, os valores vêm do relatório do gateway. Os juros do parcelamento são pagos pelo atleta.</p>';
+}
+function evidence(r){return[
+  ['Aceite do regulamento e do termo, com data e IP',true,fmtDT(r.created)+' · IP '+(r.ip||'—')],
+  ['Comprovante enviado por e-mail',true,'entregue em '+fmtDT(r.paidAt||r.created)],
+  ['Documento com foto do atleta',r.doc==='aprovado'?true:null,esc(r.docFile)+' · '+docTxt[r.doc][0].toLowerCase()],
+  ['Política de reembolso aceita no checkout',true,'7 dias corridos, art. 49 do CDC'],
+  ['Pedido de cancelamento feito pelo atleta',false,'nenhum pedido registrado'],
+  ['Retirada do kit com documento',r.kit?true:null,r.kit?'retirado em '+fmtDT(r.kitAt):'retirada só na semana da prova']]}
+function oDisp(){
+  const list=DB.regs.filter(r=>r.dispute).sort((a,b)=>a.dispute.deadline-b.dispute.deadline);
+  return '<div class="oh"><div><p class="eyebrow">Chargebacks no cartão</p><h1 style="margin-top:8px">Contestações</h1></div></div>'+
+  '<p class="muted small" style="max-width:62ch;margin-bottom:24px">O titular do cartão pede ao banco para desfazer a compra. O gateway segura o valor e você tem um prazo para mandar provas. O sistema já junta as provas que tem: aceite com IP, e-mail de confirmação, documento e retirada do kit.</p>'+
+  (list.length?list.map(r=>{const d=r.dispute,left=Math.ceil((d.deadline-SIM_TODAY)/DAY),open=d.status==='aberta';
+    return '<div class="item" style="align-items:start"><div style="min-width:0">'+
+    '<div class="row" style="gap:16px">'+(open?'<span class="badge b-crit">Aberta</span>':d.status==='defesa enviada'?'<span class="badge b-warn">Defesa enviada</span>':'<span class="badge b-muted">Perdida</span>')+(open?'<span class="mono small'+(left<=3?'" style="color:var(--crit)':'')+'">responder até '+fmtD(d.deadline)+' · '+left+(left===1?' dia':' dias')+'</span>':'')+'</div>'+
+    '<p style="margin-top:10px"><b style="font-weight:600">'+esc(r.name)+'</b> · '+money(d.amount)+' · cartão '+r.inst+'x</p><p class="small muted">'+esc(d.reason)+' · '+esc(r.protocol)+'</p>'+
+    (ORG.disp===r.id?'<ul class="evi">'+evidence(r).map(([l,ok,det])=>'<li><span class="'+(ok?'y':ok===false?'n':'q')+'">'+(ok?'✓':ok===false?'✗':'·')+'</span><span>'+l+'<br><span class="small muted">'+det+'</span></span></li>').join('')+'</ul>':'')+
+    '</div>'+(open?'<div class="row">'+(ORG.disp===r.id?'<button class="btn btn-sm" data-oa="disp-send" data-id="'+r.id+'">Enviar defesa</button>':'<button class="btn btn-sm" data-oa="disp-open" data-id="'+r.id+'">Ver provas</button>')+'<button class="btn btn-ghost btn-sm" data-oa="disp-accept" data-id="'+r.id+'">Aceitar e devolver</button></div>':'')+'</div>'}).join('')
+  :'<p class="muted">Nenhuma contestação.</p>');
+}
+function oKits(){
+  const paid=DB.regs.filter(r=>PAIDS.includes(r.status)),done=paid.filter(r=>r.kit).sort((a,b)=>b.kitAt-a.kitAt);
+  const q=norm(ORG.kitQ).trim(),qd=q.replace(/\D/g,'');
+  const res=q?paid.filter(r=>String(r.bib)===q||norm(r.protocol)===q||norm(r.name).includes(q)||(qd.length>=6&&r.cpf.replace(/\D/g,'')===qd)).slice(0,6):[];
+  const s=ORG.kitSel?byId(ORG.kitSel):null;
+  let sel='';
+  if(s)sel='<div class="bib" style="margin-top:28px"><p class="n">'+s.bib+'</p><div style="min-width:0"><p style="font-weight:600;font-size:20px">'+esc(s.name)+'</p><p class="small muted" style="margin-top:4px">'+modLabel(s.modality)+' · camiseta <b style="color:var(--fg)">'+esc(s.shirt)+'</b> · '+flagTxt[s.country]+' · '+esc(s.docType)+' '+esc(s.cpf||s.docNum)+'</p>'+
+    (s.doc!=='aprovado'?'<p class="small" style="color:var(--warn);margin-top:10px">Documento '+docTxt[s.doc][0].toLowerCase()+'. Confira o original com atenção.</p>':'')+
+    (s.status==='contestado'?'<p class="small" style="color:var(--crit);margin-top:6px">Pagamento em contestação. Fale com a coordenação antes de entregar.</p>':'')+
+    (s.kit?'<p class="small" style="color:var(--ok);margin-top:12px">Kit já entregue em '+fmtDT(s.kitAt)+'.</p>':'<label class="chk" style="margin-top:16px"><input type="checkbox" id="kdoc"><span>Conferi o documento com foto.</span></label><button class="btn" style="margin-top:14px" data-oa="kit-ok" data-id="'+s.id+'">Confirmar entrega</button>')+'</div></div>';
+  return '<div class="oh"><div><p class="eyebrow">Balcão de retirada</p><h1 style="margin-top:8px">Entrega de kits</h1></div><span class="mono small muted">'+done.length+' / '+paid.length+' entregues</span></div>'+
+  '<form data-form="okit" class="row" style="align-items:flex-end;max-width:640px"><div class="f" style="flex:1 1 260px"><label for="kq">Nº de peito, nome, CPF ou protocolo</label><input id="kq" value="'+esc(ORG.kitQ)+'" placeholder="ex.: 101"></div><button class="btn" type="submit">Buscar</button></form>'+
+  '<p class="small muted" style="margin-top:10px">No sistema real, o voluntário lê o QR code do atleta com a câmera do celular e cai direto aqui.</p>'+
+  (q&&!s?(res.length?'<div class="todo" style="margin-top:20px;max-width:640px">'+res.map(r=>'<button data-oa="kit-sel" data-id="'+r.id+'"><span><span class="mono">'+r.bib+'</span> · '+esc(r.name)+'</span><span class="small muted">'+(r.kit?'entregue':modLabel(r.modality))+'</span></button>').join('')+'</div>':'<p class="small" style="margin-top:16px">Ninguém encontrado.</p>'):'')+sel+
+  (done.length?'<p class="osec" style="margin-top:48px">Últimas entregas</p><div class="tbl"><table><thead><tr><th>Peito</th><th>Atleta</th><th>Camiseta</th><th>Horário</th></tr></thead><tbody>'+done.slice(0,10).map(r=>'<tr><td class="mono">'+r.bib+'</td><td>'+esc(r.name)+'</td><td>'+r.shirt+'</td><td class="mono small">'+fmtDT(r.kitAt)+'</td></tr>').join('')+'</tbody></table></div>':'');
+}
+function oModal(){
+  const r=byId(ORG.sel);if(!r)return '';
+  const kv=(l,v)=>'<dt>'+l+'</dt><dd>'+v+'</dd>';
+  let act='';
+  if(r.status==='pago'){
+    act=ORG.confirm?'<div class="note" style="color:var(--fg)">Devolver <b>'+money(r.total)+'</b> para '+esc(r.name)+'? O número '+r.bib+' fica livre e a vaga volta para a venda.<div class="row" style="margin-top:12px"><button class="btn btn-sm" style="background:var(--crit);border-color:var(--crit);color:var(--bg)" data-oa="refund-ok" data-id="'+r.id+'">Confirmar reembolso</button><button class="btn btn-ghost btn-sm" data-oa="refund-no">Voltar</button></div></div>'
+    :'<div class="row">'+(r.doc==='analise'?'<button class="btn btn-sm" data-oa="doc-ok" data-id="'+r.id+'">Aprovar documento</button>':'')+'<button class="btn btn-ghost btn-sm" data-oa="resend" data-id="'+r.id+'">Reenviar comprovante</button><button class="link" style="color:var(--crit);margin-left:auto" data-oa="refund" data-id="'+r.id+'">Reembolsar</button></div>';
+  }else if(r.status==='contestado')act='<button class="btn btn-sm" data-oa="goto-disp" data-id="'+r.id+'">Ver contestação</button>';
+  return '<div class="overlay" data-oa="close"><div class="modal" role="dialog" aria-modal="true" aria-label="'+esc(r.name)+'">'+
+  '<div class="row between" style="align-items:flex-start"><div><div class="row" style="gap:14px">'+badge(stTxt,r.status)+(PAIDS.includes(r.status)?badge(docTxt,r.doc):'')+(r.kit?'<span class="badge b-ok">Kit entregue</span>':'')+'</div><h2 style="font-size:26px;margin-top:10px">'+esc(r.name)+'</h2><p class="small muted mono">'+esc(r.protocol)+(r.bib?' · peito '+r.bib:'')+'</p></div><button class="x" data-oa="close" aria-label="Fechar">×</button></div>'+
+  '<dl class="kv">'+kv('Percurso',modLabel(r.modality)+' · '+catLabel(r.cat))+kv('País',flagTxt[r.country])+kv('Nascimento',r.birth?new Date(r.birth+'T12:00').toLocaleDateString('pt-BR')+' · '+ageAt(r.birth)+' anos na prova':'—')+
+  kv('Documento',esc(r.docType)+' · '+esc(r.cpf?'CPF '+r.cpf:r.docNum)+'<br><span class="small muted mono">'+esc(r.docFile)+'</span>')+kv('E-mail',esc(r.email))+kv('Celular',esc(r.phone))+kv('Camiseta',esc(r.shirt))+kv('Emergência',esc(r.emergency))+
+  kv('Pagamento',r.method?money(r.total)+' · '+(r.method==='pix'?'Pix':'cartão '+r.inst+'x')+'<br><span class="small muted">taxa do gateway '+money(gwFee(r))+' · '+fmtDT(r.paidAt||r.created)+'</span>':'—')+
+  (r.refundedAt?kv('Reembolso',fmtDT(r.refundedAt)):'')+kv('Aceite dos termos',fmtDT(r.created)+' · IP '+esc(r.ip||'—'))+'</dl>'+act+'</div></div>';
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-oa]');if(!b)return;
+  const a=b.dataset.oa,id=b.dataset.id,r=id?byId(id):null;
+  switch(a){
+  case 'logout':DB.org=false;save();go('inicio');break;
+  case 'tab':ORG.tab=b.dataset.v;ORG.sel=null;ORG.disp=null;ORG.kitSel=null;render();window.scrollTo(0,0);break;
+  case 'open':ORG.sel=id;ORG.confirm=false;render();break;
+  case 'close':if(e.target===b||b.tagName==='BUTTON'){ORG.sel=null;render()}break;
+  case 'page':ORG.page+=+b.dataset.v;orgTable();break;
+  case 'doc-ok':r.doc='aprovado';save();toast('Documento de '+r.name+' aprovado.');render();break;
+  case 'doc-no':{const s=document.getElementById('rr-'+id);r.doc='recusado';r.docReason=s?s.value:REASONS[0];save();toast('E-mail enviado para '+r.email+'. Prazo para reenviar: '+fmtD(SIM_TODAY+30*DAY)+'.');render();break}
+  case 'remind':toast('Lembrete enviado para '+r.email+'.');break;
+  case 'resend':toast('Comprovante reenviado para '+r.email+'.');break;
+  case 'refund':ORG.confirm=true;render();break;
+  case 'refund-no':ORG.confirm=false;render();break;
+  case 'refund-ok':r.status='reembolsado';r.refundedAt=simNow();r.bib=null;save();ORG.sel=null;toast('Reembolso de '+money(r.total)+' pedido ao gateway. Vaga liberada.');render();break;
+  case 'goto-disp':ORG.sel=null;ORG.tab='contestacoes';ORG.disp=id;render();break;
+  case 'disp-open':ORG.disp=id;render();break;
+  case 'disp-send':r.dispute.status='defesa enviada';save();ORG.disp=null;toast('Defesa enviada ao gateway. O banco costuma decidir em 30 a 75 dias.');render();break;
+  case 'disp-accept':r.dispute.status='perdida';r.status='estornado';r.bib=null;save();toast(money(r.total)+' devolvidos ao titular do cartão.');render();break;
+  case 'kit-sel':ORG.kitSel=id;render();break;
+  case 'kit-ok':{const c=document.getElementById('kdoc');if(!c||!c.checked){toast('Marque que você conferiu o documento.');break}r.kit=true;r.kitAt=simNow();save();toast('Kit do peito '+r.bib+' entregue.');ORG.kitQ='';ORG.kitSel=null;render();const i=document.getElementById('kq');if(i)i.focus();break}
+  case 'csv':{const q=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';
+    const csv=[['protocolo','peito','nome','percurso','categoria','pais','documento','cpf_ou_doc','email','celular','camiseta','pagamento','forma','parcelas','total','documento_status','inscrito_em'].join(',')].concat(oFiltered().map(r=>[r.protocol,r.bib,r.name,modLabel(r.modality),catLabel(r.cat),flagTxt[r.country],r.docType,r.cpf||r.docNum,r.email,r.phone,r.shirt,stTxt[r.status][0],r.method,r.inst,r.total.toFixed(2),docTxt[r.doc][0],fmtDT(r.created)].map(q).join(','))).join('\n');
+    try{navigator.clipboard.writeText(csv).then(()=>toast('Planilha copiada. Cole no Excel ou Google Sheets.'),()=>toast('Não deu para copiar neste navegador.'))}catch(x){toast('Não deu para copiar neste navegador.')}break}
+  }
+});
+document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.of;if(k){ORG[k]=e.target.value;ORG.page=0;orgTable()}});
+document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.of;if(k&&e.target.tagName==='SELECT'){ORG[k]=e.target.value;ORG.page=0;orgTable()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&ORG.sel){ORG.sel=null;render()}if(e.key==='Enter'&&e.target.matches&&e.target.matches('tr[data-oa="open"]')){ORG.sel=e.target.dataset.id;render()}});
+document.addEventListener('submit',e=>{
+  const f=e.target.dataset.form;
+  if(f==='olog'){e.preventDefault();DB.org=true;save();render()}
+  if(f==='okit'){e.preventDefault();ORG.kitQ=document.getElementById('kq').value;ORG.kitSel=null;const q=norm(ORG.kitQ).trim();
+    const ex=DB.regs.filter(r=>PAIDS.includes(r.status)&&(String(r.bib)===q||norm(r.protocol)===q));if(ex.length===1)ORG.kitSel=ex[0].id;render()}
+});
+
+/* countdown */
+function tick(){
+  clearInterval(tick.i);
+  if(route()!=='inicio')return;
+  const run=()=>{const left=Math.max(0,EVENT.getTime()-simNow()),set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=String(v).padStart(2,'0')};
+    set('cd-d',Math.floor(left/DAY));set('cd-h',Math.floor(left%DAY/36e5));set('cd-m',Math.floor(left%36e5/6e4));set('cd-s',Math.floor(left%6e4/1e3))};
+  run();tick.i=setInterval(run,1000);
+}
+
+/* events */
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]');
+  if(g){const to=g.dataset.go;if(to==='inscricao'&&(g.dataset.cat||!S.draft)){S.draft=newDraft(g.dataset.cat);S.errors={}}go(to);return}
+  const sc=e.target.closest('[data-scroll]');
+  if(sc){const el=document.getElementById(sc.dataset.scroll);if(el)el.scrollIntoView();return}
+  const a=e.target.closest('[data-act]');if(!a)return;
+  const act=a.dataset.act;
+  if(act==='fill'){capture();fill();render()}
+  else if(act==='method'){S.pay=a.dataset.v;S.cardErr='';S.errors={};if(S.pay==='pix')S.inst=1;render()}
+  else if(act==='copy'){const txt=document.getElementById('pixcode').textContent;try{navigator.clipboard.writeText(txt).then(()=>toast('Código Pix copiado'),()=>selText('pixcode'))}catch(x){selText('pixcode')}}
+  else if(act==='pay-pix'){confirmPayment(byId(S.checkout),'pix',1)}
+  else if(act==='abandon'){const r=byId(S.checkout);if(r){r.status='abandonado';save()}S.checkout=null;go('inicio')}
+  else if(act==='magic'){DB.session=S.login.email.toLowerCase();S.login={email:'',sent:false,err:''};save();render()}
+  else if(act==='relogin'){S.login.sent=false;render()}
+  else if(act==='logout'){DB.session=null;save();render()}
+  else if(act==='cancel'){S.cancel=a.dataset.id;render()}
+  else if(act==='cancel-no'){S.cancel=null;render()}
+  else if(act==='cancel-ok'){const r=byId(a.dataset.id);r.status='reembolsado';r.refundedAt=simNow();r.bib=null;save();S.cancel=null;toast('Inscrição cancelada. Reembolso pedido ao gateway.');render()}
+  else if(act==='receipt')toast('Comprovante reenviado para '+DB.session+'.');
+  else if(act==='change')toast('No sistema real, abre o formulário de alteração com a cobrança de '+money(CHANGE_FEE)+'.');
+});
+function selText(id){const el=document.getElementById(id);if(!el)return;const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r)}
+document.addEventListener('change',e=>{
+  const el=e.target;
+  if(el.dataset.actChange==='inst'){S.inst=+el.value;render();return}
+  if(route()!=='inscricao'||!el.dataset.f)return;
+  const k=el.dataset.f;
+  if(['modality','cat','country'].includes(k)){capture();const d=D();if(k==='country')d.docType=DOCS[d.country][0];if(k==='cat')delete S.errors.cat;render()}
+  else if(el.type==='file'){capture();delete S.errors[k];render()}
+});
+document.addEventListener('submit',e=>{
+  const f=e.target.dataset.form;if(!f)return;e.preventDefault();
+  if(f==='reg'){capture();if(!validate()){render();const bad=document.querySelector('.bad input,.bad select,.chk .err');if(bad)bad.scrollIntoView({block:'center'});return}
+    const d=D(),n=DB.regs.length+1;
+    const r=Object.assign({},d,{id:'r'+Date.now(),protocol:'3F26-'+String(n).padStart(6,'0'),ip:'177.84.12.201',kit:false,kitAt:null,dispute:null,docReason:'',base:priceOf(d.cat),fee:FEE,interest:0,total:priceOf(d.cat)+FEE,status:'aguardando',created:simNow(),doc:'analise',bib:null,method:null,inst:1,paidAt:null,refundedAt:null});
+    DB.regs.push(r);save();S.checkout=r.id;S.pay=r.country==='BR'?'pix':'card';S.inst=1;S.errors={};S.cardErr='';go('checkout')}
+  if(f==='card'){const v=id=>document.getElementById(id).value.trim(),n=v('cn').replace(/\D/g,''),e2={};
+    if(!luhn(n))e2.cn='Número de cartão inválido.';if(!v('ch'))e2.ch='Preencha este campo.';
+    if(!/^(0[1-9]|1[0-2])\/?\d{2}$/.test(v('cx')))e2.cx='Use MM/AA.';if(!/^\d{3,4}$/.test(v('cv')))e2.cv='3 ou 4 dígitos.';
+    S.errors=e2;S.cardErr='';if(Object.keys(e2).length){render();return}
+    if(n==='4000000000000002'){S.cardErr='Pagamento recusado pelo banco emissor. Tente outro cartão ou use Pix.';render();return}
+    confirmPayment(byId(S.checkout),'card',S.inst)}
+  if(f==='login'){const em=document.getElementById('lg').value.trim();S.login.email=em;
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em))S.login.err='Digite um e-mail válido.';
+    else if(!DB.regs.some(r=>r.email.toLowerCase()===em.toLowerCase()&&(r.status==='pago'||r.status==='reembolsado')))S.login.err='Não encontramos inscrição com esse e-mail.';
+    else{S.login.err='';S.login.sent=true}render()}
+});
+
+ensureSeed();
+render();
+})();
+</script>
