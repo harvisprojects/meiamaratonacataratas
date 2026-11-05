@@ -419,6 +419,9 @@ td .sub{display:block;font-size:12px;color:var(--muted)}
 /* revelação ao rolar (uma vez por elemento) */
 .js-rv [data-rv]{opacity:0;transform:translateY(18px);transition:opacity 600ms var(--ease-out),transform 600ms var(--ease-out);transition-delay:var(--d,0ms)}
 .js-rv [data-rv].in{opacity:1;transform:none}
+.js-rv [data-rv=fade]{transform:none}
+/* durante o pulo do menu nada anima: evita camadas presas no meio da rolagem */
+.jumping [data-rv]{transition:none!important}
 /* troca de tela e sucesso do pagamento */
 .bib.celebrate{animation:pop 500ms var(--ease-out) both}
 /* FAQ abre com altura + fade */
@@ -1008,12 +1011,20 @@ addEventListener('hashchange',()=>render());
 const RM=matchMedia('(prefers-reduced-motion:reduce)');
 const RV_GROUPS=['.sec-h','.dists>.dist','.course>*','.course-txt>div','.pro-txt>:not(ul)','.pro-list>li','.pro-img','.perks>.eyebrow','.perks-g>.perk','.agenda>.ag','.info>div','.faq>details','.final .wrap>*'];
 let rvIO=null,spyIO=null,firstPaint=true;
+const RV_FADE=['.dist','.course>*','.pro-img','.ag'];
+/* mostra o elemento e, depois da transição, tira os atributos de animação para ele virar conteúdo normal */
+function revealDone(el){
+  el.classList.add('in');
+  const jumping=document.documentElement.classList.contains('jumping');
+  const wait=jumping?0:700+(parseInt(el.style.getPropertyValue('--d'))||0);
+  setTimeout(()=>{el.removeAttribute('data-rv');el.classList.remove('in');el.style.removeProperty('--d')},wait);
+}
 if('IntersectionObserver' in window)document.documentElement.classList.add('js-rv');
 function setupMotion(v){
   if(rvIO)rvIO.disconnect();if(spyIO)spyIO.disconnect();
   if(v!=='inicio'||!('IntersectionObserver' in window))return;
-  rvIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting||e.boundingClientRect.bottom<0){e.target.classList.add('in');rvIO.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px',threshold:.12});
-  RV_GROUPS.forEach(sel=>document.querySelectorAll(sel).forEach((el,i)=>{el.dataset.rv='';el.style.setProperty('--d',Math.min(i,6)*60+'ms');rvIO.observe(el)}));
+  rvIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting||e.boundingClientRect.bottom<0){revealDone(e.target);rvIO.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px',threshold:.12});
+  RV_GROUPS.forEach(sel=>document.querySelectorAll(sel).forEach((el,i)=>{el.dataset.rv=RV_FADE.some(f=>el.matches(f))?'fade':'';el.style.setProperty('--d',Math.min(i,6)*60+'ms');rvIO.observe(el)}));
   spy();
 }
 function routeIn(v,changed){
@@ -1038,6 +1049,8 @@ function goSection(id,smooth=true){
   const y=el.getBoundingClientRect().top+scrollY-64;
   document.querySelectorAll('.site-h nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+id));
   spyLock=Date.now()+1200;
+  const de=document.documentElement;de.classList.add('jumping');clearTimeout(goSection.t);goSection.t=setTimeout(()=>de.classList.remove('jumping'),1200);
+  document.querySelectorAll('[data-rv]').forEach(r=>{if(r.getBoundingClientRect().top+scrollY<y+innerHeight)revealDone(r)});
   window.scrollTo({top:Math.max(0,y),behavior:smooth&&!RM.matches?'smooth':'auto'});
   try{history.replaceState(null,'','#'+id)}catch(e){}
   return true;
