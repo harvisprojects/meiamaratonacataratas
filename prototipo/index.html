@@ -61,19 +61,20 @@ p{margin:0}
 .testbar .sp{flex:1}
 
 /* topo do site */
-.site-h{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.site-h{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg)}
 .site-h .wrap{display:flex;align-items:center;gap:28px;height:64px}
 .brand{font:900 22px/1 var(--display);letter-spacing:.02em;text-transform:uppercase;text-decoration:none;white-space:nowrap}
 .brand i{font-style:normal;color:var(--forest-2)}
 .site-h nav{display:flex;gap:24px;flex:1}
-.site-h nav a{text-decoration:none;font-weight:500;font-size:15px;color:var(--muted)}
+.site-h nav a{white-space:nowrap;text-decoration:none;font-weight:500;font-size:15px;color:var(--muted)}
 .site-h nav a:hover{color:var(--ink)}
 .site-h .acts{display:flex;gap:10px;align-items:center}
-@media (max-width:820px){.site-h nav{display:none}.site-h .acts{margin-left:auto}.hide-sm{display:none}}
+@media (max-width:1000px){.site-h nav{display:none}.site-h .acts{margin-left:auto}}
+@media (max-width:820px){.site-h .acts{margin-left:auto}.hide-sm{display:none}}
 
 /* hero: banner em tela cheia; menu transparente por cima, que fica branco ao rolar */
-.site-h{transition:background-color .25s ease,border-color .25s ease}
-.site-h.over:not(.solid){background:transparent;border-bottom-color:transparent}
+.site-h{transition:background-color .25s ease}
+.site-h.over:not(.solid){background:transparent}
 .site-h.over{margin-bottom:-64px}
 .site-h.over:not(.solid) .brand,.site-h.over:not(.solid) .brand i,.site-h.over:not(.solid) nav a{color:#fff}
 .site-h.over:not(.solid) .brand,.site-h.over:not(.solid) nav a{text-shadow:0 1px 8px rgba(0,0,0,.35)}
@@ -92,9 +93,8 @@ p{margin:0}
 .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
 .hero .btn-line{color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.75)}
 .hero .btn-line:hover{box-shadow:inset 0 0 0 1.5px #fff}
-.hero-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid rgba(255,255,255,.35)}
-.hero-facts div{padding:22px 20px 28px 0;display:flex;flex-direction:column;gap:6px;min-width:0}
-.hero-facts div+div{padding-left:24px;border-left:1px solid rgba(255,255,255,.25)}
+.hero-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding-block:72px}
+.hero-facts div{padding:0;display:flex;flex-direction:column;gap:6px;min-width:0}
 .hero-facts b{font:800 clamp(28px,3.4vw,48px)/1 var(--display);text-transform:uppercase;color:#fff;white-space:nowrap}
 @media (max-width:900px){
   .hero{min-height:calc(100svh - var(--tbar,0px))}
@@ -106,10 +106,7 @@ p{margin:0}
   .hero .lead{font-size:16px;margin-top:14px}
   .hero-cta{margin-top:20px}
   .hero-facts{grid-template-columns:1fr 1fr}
-  .hero-facts div{padding:14px 12px 14px 0}
-  .hero-facts div+div{padding-left:14px}
-  .hero-facts div:nth-child(3){padding-left:0;border-left:0}
-  .hero-facts div:nth-child(n+3){border-top:1px solid rgba(255,255,255,.25)}
+  .hero-facts{gap:16px;padding-block:56px}
   .hero-facts b{font-size:26px}
 }
 .photo{margin:0;position:relative;border-radius:14px;overflow:hidden;background:var(--surface);max-width:100%}
@@ -139,9 +136,8 @@ p{margin:0}
 
 /* seções */
 section[id]{scroll-margin-top:64px}
-.sec{padding-block:88px}
-.sec + .sec{border-top:1px solid var(--line)}
-.sec-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px 40px;margin-bottom:40px}
+.sec{padding-block:clamp(80px,11vw,136px)}
+.sec-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px 40px;margin-bottom:clamp(36px,5vw,64px)}
 .h2{font:900 clamp(2.4rem,5vw,3.8rem)/.95 var(--display);text-transform:uppercase;margin-top:10px}
 .sec-h p.muted{max-width:46ch}
 
@@ -162,27 +158,49 @@ section[id]{scroll-margin-top:64px}
 
 /* kit Fronteira Pro: faixa escura de destaque */
 .pro{background:#0E2233;color:#fff}
-.pro .wrap{padding-block:96px}
+.pro .wrap{padding-block:clamp(80px,11vw,136px)}
 .pro .eyebrow{color:var(--sun)}
 .pro-g{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:56px;align-items:center}
 .pro-h{font:900 clamp(3rem,7vw,6rem)/.86 var(--display);text-transform:uppercase;margin-top:12px}
 .pro-h span{display:block;color:var(--sun)}
 .pro-lead{font-size:18px;line-height:1.55;color:rgba(255,255,255,.82);max-width:46ch;margin-top:20px}
 .pro-list{list-style:none;margin:32px 0 36px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 32px}
-.pro-list li{display:flex;align-items:baseline;gap:14px;padding:14px 0;border-top:1px solid rgba(255,255,255,.16);font:700 clamp(20px,2vw,24px)/1.15 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.pro-list li{display:flex;align-items:baseline;gap:14px;padding:10px 0;font:700 clamp(20px,2vw,24px)/1.15 var(--display);text-transform:uppercase;letter-spacing:.02em}
 .pro-list li span{font:500 12px/1 var(--mono);color:var(--sun);letter-spacing:0}
 .pro-img{margin:0;border-radius:14px;overflow:hidden;aspect-ratio:4/5;max-width:100%}
 .pro-img img{width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block}
-.perks{margin-top:80px;padding-top:40px;border-top:1px solid rgba(255,255,255,.16)}
+.perks{margin-top:clamp(72px,9vw,112px)}
 .perks-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;margin-top:20px}
 .perk h3{font:800 28px/1 var(--display);text-transform:uppercase}
 .perk p{color:rgba(255,255,255,.75);font-size:15px;margin-top:10px;max-width:36ch}
-@media (max-width:860px){.pro .wrap{padding-block:64px}.pro-g{grid-template-columns:1fr;gap:36px}.pro-img{aspect-ratio:1/1}.perks{margin-top:56px}.perks-g{grid-template-columns:1fr;gap:28px}}
+@media (max-width:860px){.pro-g{grid-template-columns:1fr;gap:36px}.pro-img{aspect-ratio:1/1}.perks{margin-top:56px}.perks-g{grid-template-columns:1fr;gap:28px}}
 @media (max-width:480px){.pro-list{grid-template-columns:1fr}}
 .kit-inc{display:flex;justify-content:space-between;align-items:center;gap:16px;border:1.5px solid var(--ink);border-radius:10px;padding:18px 20px}
 .kit-inc b{display:block;font-weight:700;font-size:17px}
 .kit-inc .d{display:block;font-size:14px;color:var(--muted);margin-top:4px}
 .kit-inc .pr{font-weight:700;white-space:nowrap}
+
+/* cronograma */
+.agenda{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.ag{border:1px solid var(--line);border-radius:14px;padding:28px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.ag-h{display:flex;align-items:center;gap:14px}
+.ag-h h3{font:800 28px/1 var(--display);text-transform:uppercase}
+.ag-role{font-size:13px;font-weight:600;color:var(--forest-2);margin-top:4px}
+.ag-place{font-size:14px;color:var(--muted);line-height:1.45}
+.ag-list{list-style:none;margin:6px 0 0;padding:0}
+.ag-list li{display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;align-items:baseline;padding:9px 0}
+.ag-list time{font:800 24px/1 var(--display);font-variant-numeric:tabular-nums;color:var(--muted)}
+.ag-list span{font-weight:600;font-size:15px}
+.ag-list li.hl time{color:var(--ink)}
+.ag-list li.hl span::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--sun);margin-left:8px;vertical-align:middle}
+.flag{flex:none;width:34px;height:23px;border-radius:3px;box-shadow:0 0 0 1px var(--line);position:relative;overflow:hidden}
+.flag-py{background:linear-gradient(#D52B1E 0 33.3%,#fff 33.3% 66.6%,#0038A8 66.6%)}
+.flag-ar{background:linear-gradient(#74ACDF 0 33.3%,#fff 33.3% 66.6%,#74ACDF 66.6%)}
+.flag-ar::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:#F6B40E}
+.flag-br{background:#009C3B}
+.flag-br::before{content:"";position:absolute;inset:3px 5px;background:#FFDF00;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.flag-br::after{content:"";position:absolute;left:50%;top:50%;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:#002776}
+@media (max-width:900px){.agenda{grid-template-columns:1fr}}
 
 /* informações */
 .info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px}
@@ -192,8 +210,6 @@ section[id]{scroll-margin-top:64px}
 
 /* dúvidas */
 .faq{max-width:780px}
-.faq details{border-top:1px solid var(--line)}
-.faq details:last-child{border-bottom:1px solid var(--line)}
 .faq summary{list-style:none;cursor:pointer;padding:20px 40px 20px 0;font-weight:600;font-size:17px;position:relative}
 .faq summary::-webkit-details-marker{display:none}
 .faq summary::after{content:"+";position:absolute;right:4px;top:16px;font:400 26px/1 var(--body);color:var(--muted);transition:transform 200ms var(--ease-out),color .2s ease}
@@ -460,9 +476,9 @@ const fmtD=t=>new Date(t).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-dig
 const fmtDT=t=>new Date(t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
 const DAY=864e5;
 
-/* datas: o protótipo vive em 20/08/2026, com o relógio andando a partir daí */
-const EVENT=new Date('2026-10-11T06:30:00-03:00').getTime();
-const SIM0=new Date('2026-08-20T10:00:00-03:00').getTime(),REAL0=Date.now();
+/* datas: o protótipo vive em 20/08/2027, com o relógio andando a partir daí */
+const EVENT=new Date('2027-10-11T06:30:00-03:00').getTime();
+const SIM0=new Date('2027-08-20T10:00:00-03:00').getTime(),REAL0=Date.now();
 const now=()=>SIM0+(Date.now()-REAL0);
 
 const DIST={
@@ -486,7 +502,7 @@ function luhn(n){const d=String(n).replace(/\D/g,'');if(d.length<13)return false
 function ageAt(b,t=EVENT){const d=new Date(b+'T12:00'),e=new Date(t);let a=e.getFullYear()-d.getFullYear();const m=e.getMonth()-d.getMonth();if(m<0||(m===0&&e.getDate()<d.getDate()))a--;return a}
 
 /* ---------- dados ---------- */
-const KEY='tf-v6';
+const KEY='tf-v7';
 let DB;
 const NAMES={
   BR:{f:['Ana','Beatriz','Camila','Fernanda','Juliana','Larissa','Mariana','Patrícia','Renata','Tatiane','Gabriela','Luana'],m:['Bruno','Carlos','Diego','Eduardo','Felipe','Gustavo','João','Lucas','Marcelo','Rafael','Thiago','Vinícius'],l:['Silva','Souza','Oliveira','Pereira','Costa','Almeida','Ferreira','Rodrigues','Lima','Carvalho','Ribeiro','Martins','Schmidt','Kowalski']},
@@ -494,7 +510,7 @@ const NAMES={
   AR:{f:['Sofía','Valentina','Florencia','Agustina','Julieta','Camila'],m:['Martín','Santiago','Facundo','Nicolás','Matías','Joaquín'],l:['Fernández','López','Romero','Sosa','Díaz','Acosta','Medina','Herrera']}
 };
 function defaults(){return{
-  v:6,regs:[],
+  v:7,regs:[],
   cfg:{p21:300,p10:250,fee:20,limit:2500,maxInst:6,lote:'1º lote, até 31/08'},
   admin:{name:'Marina Duarte',email:'organizacao@exemplo.com',phone:'+55 45 99900-1234',role:'Diretora de prova'},
   orgi:{name:'Associação Corrida das 3 Fronteiras',cnpj:'12.345.678/0001-90',city:'Foz do Iguaçu, PR',email:'contato@exemplo.com',gateway:'Mercado Pago · modo de teste'},
@@ -508,7 +524,7 @@ const gwFee=r=>r.method==='pix'?r.total*.0099:r.total*.0399+.39;
 
 function seed(){
   const db=defaults(),r=mulberry32(11),pick=a=>a[Math.floor(r()*a.length)];
-  const start=new Date('2026-05-04T09:00:00-03:00').getTime();
+  const start=new Date('2027-05-04T09:00:00-03:00').getTime();
   const regs=[];
   for(let i=0;i<640;i++){
     const x=r(),c=x<.6?'BR':x<.82?'PY':'AR',P=NAMES[c],sex=r()<.46?'F':'M';
@@ -536,14 +552,14 @@ function seed(){
   }
   regs.sort((a,b)=>a.created-b.created);
   const n={'21':1001,'10':5001};
-  regs.forEach((g,i)=>{g.protocol='3F26-'+String(i+1).padStart(6,'0');if(g.status!=='pendente')g.bib=n[g.dist]++});
+  regs.forEach((g,i)=>{g.protocol='3F27-'+String(i+1).padStart(6,'0');if(g.status!=='pendente')g.bib=n[g.dist]++});
   const demo=regs.find(g=>g.status==='pago'&&g.country==='BR'&&g.dist==='21');
   Object.assign(demo,{name:'Ana Paula Souza',email:'atleta@exemplo.com'});
   db.regs=regs;
   db.log=[{t:SIM0-2*36e5,who:'Rafael Benítez',what:'Exportou a lista de inscritos'},{t:SIM0-DAY,who:'Marina Duarte',what:'Alterou o limite de atletas para 2.500'},{t:SIM0-3*DAY,who:'Rafael Benítez',what:'Enviou provas de uma contestação'}];
   return db;
 }
-function load(){try{const s=localStorage.getItem(KEY);if(s){const d=JSON.parse(s);if(d&&d.v===6)return d}}catch(e){}return seed()}
+function load(){try{const s=localStorage.getItem(KEY);if(s){const d=JSON.parse(s);if(d&&d.v===7)return d}}catch(e){}return seed()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
 function logA(what){DB.log.unshift({t:now(),who:DB.admin.name,what});DB.log=DB.log.slice(0,40)}
 DB=load();
@@ -558,12 +574,20 @@ function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;requestAnim
 function testBar(){return `<div class="testbar"><div class="wrap"><b>Modo de teste</b><span>Dados e pagamentos fictícios</span><span class="sp"></span>
 <button data-act="quick-insc">Inscrição rápida</button><button data-act="quick-athlete">Entrar como atleta</button><button data-act="quick-org">Painel da organização</button><button data-act="reset">Zerar dados</button></div></div>`}
 function siteHeader(over){return `<header class="site-h${over?' over':''}"><div class="wrap"><a class="brand" href="#inicio">Meia <i>3</i> Fronteiras</a>
-<nav><a href="#prova">A prova</a><a href="#kits">Kit Pro</a><a href="#percurso">Percurso</a><a href="#info">Informações</a><a href="#duvidas">Dúvidas</a></nav>
+<nav><a href="#prova">A prova</a><a href="#percurso">Percurso</a><a href="#kits">Kit Pro</a><a href="#cronograma">Cronograma</a><a href="#info">Informações</a><a href="#duvidas">Dúvidas</a></nav>
 <div class="acts"><a class="btn btn-line btn-sm hide-sm" href="#atleta">Área do atleta</a><a class="btn btn-sm" href="#inscricao">Inscreva-se</a></div></div></header>`}
-function siteFoot(){return `<footer class="foot"><div class="wrap"><span>Meia Maratona Internacional das 3 Fronteiras · 11 de outubro de 2026</span>
+function siteFoot(){return `<footer class="foot"><div class="wrap"><span>Meia Maratona Internacional das 3 Fronteiras · 11 de outubro de 2027</span>
 <nav><a href="#atleta">Área do atleta</a><a href="#duvidas">Regulamento</a><a href="#org">Organização</a></nav></div><div class="wrap" style="padding-bottom:28px"><details class="credits"><summary>Créditos das fotos (Wikimedia Commons)</summary><ul>${Object.values(PHOTOS).map(P=>`<li>${esc(P.alt)}: ${esc(P.by)}, <a href="${P.url}" target="_blank" rel="noopener">${P.lic}</a></li>`).join('')}</ul></details></div></footer>`}
 
 /* ---------- landing ---------- */
+const AGENDA=[
+  {k:'py',country:'Paraguai',role:'Largada do 21K',place:'Em frente à Municipalidad de Ciudad del Este, Rua Gral. Bernardino Caballero',
+   items:[['06h00','Guarda-volume'],['06h00','Concentração'],['06h20','Aquecimento'],['06h25','Largada cadeirante',1],['06h30','Largada geral',1]]},
+  {k:'br',country:'Brasil',role:'Largada do 10K',place:'Em frente à Secretaria Municipal de Turismo, Av. das Cataratas, 2330, Vila Yolanda, Foz do Iguaçu',
+   items:[['06h20','Guarda-volume'],['06h30','Largada geral',1]]},
+  {k:'ar',country:'Argentina',role:'Chegada das duas provas',place:'Marco das Três Fronteiras, Puerto Iguazú',
+   items:[['09h00','Premiação geral',1],['09h30','Premiação por categoria'],['11h00','Encerramento']]}
+];
 const MAP=`<svg viewBox="0 0 420 380" role="img" aria-label="Mapa simplificado: o 21K sai de Ciudad del Este, cruza para Foz do Iguaçu e termina na Argentina; o 10K sai de Foz do Iguaçu e termina no mesmo ponto.">
 <path class="riv" stroke-width="12" d="M150 0 C 138 70, 176 130, 158 196 C 150 232, 142 300, 166 380"/>
 <path class="riv" stroke-width="9" d="M420 268 C 360 252, 330 290, 282 262 C 236 236, 196 224, 160 214"/>
@@ -603,13 +627,13 @@ function vLanding(){
 <section class="hero">
   <img class="hero-bg" src="img/hero.jpg" alt="Dois corredores com o kit da prova passam pelo mirante, com o marco da fronteira e o rio ao fundo" fetchpriority="high">
   <div class="wrap hero-main"><div class="hero-txt">
-    <p class="eyebrow">Meia Maratona Internacional das 3 Fronteiras · 2026</p>
+    <p class="eyebrow">Meia Maratona Internacional das 3 Fronteiras · 2027</p>
     <h1 class="h-hero">Três países.<span>Uma chegada.</span></h1>
     <p class="lead">Uma meia maratona cuidada em cada detalhe: kit Fronteira Pro completo, área VIP na chegada e volta garantida para Foz. Você só precisa correr.</p>
     <div class="hero-cta"><a class="btn" href="#inscricao">Inscreva-se</a><a class="btn btn-line" href="#kits">Conheça o kit Pro</a></div>
   </div></div>
   <div class="wrap hero-facts">
-    <div><span class="eyebrow">Data</span><b>11 out 2026</b></div>
+    <div><span class="eyebrow">Data</span><b>11 out 2027</b></div>
     <div><span class="eyebrow">Largada</span><b>06h30</b></div>
     <div><span class="eyebrow">Distâncias</span><b>21K e 10K</b></div>
     <div><span class="eyebrow">Vagas restantes</span><b class="num">${int(left())}</b></div>
@@ -647,6 +671,10 @@ function vLanding(){
       ${perk('Volta garantida para Foz','Ônibus exclusivos levam todos os atletas da chegada, em Puerto Iguazú, de volta a Foz do Iguaçu.')}
     </div>
   </div>
+</div></section>
+<section class="sec" id="cronograma"><div class="wrap">
+  <div class="sec-h"><div><p class="eyebrow">Cronograma</p><h2 class="h2">O dia da prova</h2></div><p class="muted">11 de outubro de 2027. Duas largadas, em dois países, e uma chegada no terceiro. Chegue cedo para deixar a mochila no guarda-volume.</p></div>
+  <div class="agenda">${AGENDA.map(g=>`<article class="ag"><header class="ag-h"><span class="flag flag-${g.k}" aria-hidden="true"></span><div><h3>${g.country}</h3><p class="ag-role">${g.role}</p></div></header><p class="ag-place">${g.place}</p><ol class="ag-list">${g.items.map(([t,e,hl])=>`<li${hl?' class="hl"':''}><time>${t}</time><span>${e}</span></li>`).join('')}</ol></article>`).join('')}</div>
 </div></section>
 <section class="sec" id="info"><div class="wrap">
   <div class="sec-h"><div><p class="eyebrow">Antes de correr</p><h2 class="h2">O que você precisa saber</h2></div></div>
@@ -736,7 +764,7 @@ function submitInsc(){
   if(left()<=0){toast('As vagas esgotaram.');return}
   const base=priceOf(F.dist),kit=kitAdd(F.tier),t=calc(base,kit,DB.cfg.fee,null,1);
   const n=DB.regs.length+1;
-  const r={id:'r'+Date.now(),protocol:'3F26-'+String(n).padStart(6,'0'),name:F.name.trim(),email:F.email.trim().toLowerCase(),phone:F.phone,birth:F.birth,sex:F.sex,country:F.country,doc:F.doc,dist:F.dist,tier:F.tier,shirt:F.shirt,
+  const r={id:'r'+Date.now(),protocol:'3F27-'+String(n).padStart(6,'0'),name:F.name.trim(),email:F.email.trim().toLowerCase(),phone:F.phone,birth:F.birth,sex:F.sex,country:F.country,doc:F.doc,dist:F.dist,tier:F.tier,shirt:F.shirt,
     base,kit,fee:DB.cfg.fee,interest:0,total:t.total,method:null,inst:1,status:'pendente',created:now(),paidAt:null,bib:null,kitDone:false,refundedAt:null,dispute:null,ip:'177.84.12.201'};
   DB.regs.push(r);DB.sess.pending=r.id;save();
   CK={tab:'card',num:'4242 4242 4242 4242',name:r.name.toUpperCase(),exp:'12/30',cvv:'123',inst:1,err:'',busy:false};
@@ -809,7 +837,7 @@ function regCard(r){
   else if(r.status==='pago')act=`<div class="actions"><button class="btn btn-line btn-sm" data-act="resend">Reenviar comprovante</button></div>`;
   return `<article class="regcard">${top}
 <dl class="kv"><dt>Situação</dt><dd><span class="chip ${stc}">${stl}</span></dd>
-<dt>Prova</dt><dd>${D.label} · 11/10/2026, largada 06h30 em ${D.from}</dd>
+<dt>Prova</dt><dd>${D.label} · 11/10/2027, largada 06h30 em ${D.from}</dd>
 <dt>Kit</dt><dd>${KITS[r.tier].name} · camiseta ${esc(r.shirt)}</dd>
 <dt>Pagamento</dt><dd>${r.method?money(r.total)+' · '+(r.method==='pix'?'Pix':'cartão '+r.inst+'x'):'—'}</dd>
 <dt>Inscrição</dt><dd class="mono small">${r.protocol}</dd></dl>${act}</article>`;
@@ -842,7 +870,7 @@ function oResumo(){
   const c=confirmed(),f=fin(),pend=DB.regs.filter(r=>r.status==='pendente'),nd=openDisputes();
   const pct=Math.min(100,c.length/DB.cfg.limit*100);
   // inscrições por semana
-  const start=new Date('2026-05-04T00:00:00-03:00').getTime(),weeks=Math.ceil((now()-start)/(7*DAY));
+  const start=new Date('2027-05-04T00:00:00-03:00').getTime(),weeks=Math.ceil((now()-start)/(7*DAY));
   const wk=Array(weeks).fill(0);DB.regs.forEach(r=>{const i=Math.floor((r.created-start)/(7*DAY));if(i>=0&&i<weeks)wk[i]++});
   const mx=Math.max(...wk),step=mx>150?50:mx>60?20:10,top=Math.ceil(mx/step)*step;
   const W=640,H=200,pl=34,pb=24,pt=8,bw=(W-pl)/weeks;
@@ -957,7 +985,7 @@ ${fi('o','name','Razão social',o.name)}${fi('o','cnpj','CNPJ',o.cnpj)}${fi('o',
 }
 
 /* ---------- roteamento ---------- */
-const LANDING_ANCHORS=['prova','percurso','kits','info','duvidas'];
+const LANDING_ANCHORS=['prova','percurso','kits','cronograma','info','duvidas'];
 let lastView=null;
 function view(){const h=location.hash.slice(1)||'inicio';return LANDING_ANCHORS.includes(h)?'inicio':h}
 function go(h){if(location.hash.slice(1)===h)render(true);else location.hash=h}
@@ -965,8 +993,8 @@ function html(){const v=view();return testBar()+({inscricao:vForm,pagamento:vChe
 function render(force){
   const v=view(),h=location.hash.slice(1);
   $('#app').innerHTML=html();setTbar();
-  if(v!==lastView||force){if(LANDING_ANCHORS.includes(h)){const el=document.getElementById(h);if(el)el.scrollIntoView()}else window.scrollTo(0,0)}
-  else if(LANDING_ANCHORS.includes(h)){const el=document.getElementById(h);if(el)el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
+  if(v!==lastView||force){if(LANDING_ANCHORS.includes(h))goSection(h,false);else window.scrollTo(0,0)}
+  else if(LANDING_ANCHORS.includes(h))goSection(h)
   if(v!=='atleta')FLASH='';
   setupMotion(v);routeIn(v,v!==lastView);setHdr();lastView=v;
 }
@@ -978,7 +1006,7 @@ function rerender(){
 addEventListener('hashchange',()=>render());
 /* revelação ao rolar, seção atual no menu, entrada do hero e troca de tela */
 const RM=matchMedia('(prefers-reduced-motion:reduce)');
-const RV_GROUPS=['.sec-h','.dists>.dist','.course>*','.course-txt>div','.pro-txt>:not(ul)','.pro-list>li','.pro-img','.perks>.eyebrow','.perks-g>.perk','.info>div','.faq>details','.final .wrap>*'];
+const RV_GROUPS=['.sec-h','.dists>.dist','.course>*','.course-txt>div','.pro-txt>:not(ul)','.pro-list>li','.pro-img','.perks>.eyebrow','.perks-g>.perk','.agenda>.ag','.info>div','.faq>details','.final .wrap>*'];
 let rvIO=null,spyIO=null,firstPaint=true;
 if('IntersectionObserver' in window)document.documentElement.classList.add('js-rv');
 function setupMotion(v){
@@ -986,18 +1014,40 @@ function setupMotion(v){
   if(v!=='inicio'||!('IntersectionObserver' in window))return;
   rvIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting||e.boundingClientRect.bottom<0){e.target.classList.add('in');rvIO.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px',threshold:.12});
   RV_GROUPS.forEach(sel=>document.querySelectorAll(sel).forEach((el,i)=>{el.dataset.rv='';el.style.setProperty('--d',Math.min(i,6)*60+'ms');rvIO.observe(el)}));
-  const links=[...document.querySelectorAll('.site-h nav a')];
-  spyIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-45% 0px -50% 0px'});
-  ['prova','kits','percurso','info','duvidas'].forEach(id=>{const el=document.getElementById(id);if(el)spyIO.observe(el)});
-  const hero=document.querySelector('.hero');
-  if(hero)new IntersectionObserver((es,o)=>es.forEach(e=>{if(e.isIntersecting&&e.intersectionRatio>.5)links.forEach(a=>a.classList.remove('on'))}),{threshold:[.5]}).observe(hero);
+  spy();
 }
 function routeIn(v,changed){
   const de=document.documentElement;
-  if(v==='inicio'&&firstPaint&&!location.hash.slice(1).match(/^(prova|kits|percurso|info|duvidas)$/)){de.classList.add('intro');setTimeout(()=>de.classList.remove('intro'),1800)}
+  if(v==='inicio'&&firstPaint&&!LANDING_ANCHORS.includes(location.hash.slice(1))){de.classList.add('intro');setTimeout(()=>de.classList.remove('intro'),1800)}
   else if(changed&&!firstPaint&&['inscricao','pagamento','atleta'].includes(v)){const m=$('#app main');if(m&&m.animate)m.animate(RM.matches?[{opacity:0},{opacity:1}]:[{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'none'}],{duration:240,easing:'cubic-bezier(.23,1,.32,1)'})}
   firstPaint=false;
 }
+/* menu: seção ativa = última cujo topo já passou da linha de leitura (logo abaixo do menu) */
+let spyLock=0;
+function spy(){
+  if(Date.now()<spyLock)return;
+  const links=[...document.querySelectorAll('.site-h nav a')];if(!links.length)return;
+  const line=64+innerHeight*.25;let cur='';
+  LANDING_ANCHORS.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<=line)cur=id});
+  if(innerHeight+scrollY>=document.documentElement.scrollHeight-4)cur=LANDING_ANCHORS[LANDING_ANCHORS.length-1];
+  links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur));
+}
+/* âncoras da landing: rola direto até a seção, sem redesenhar a página */
+function goSection(id,smooth=true){
+  const el=document.getElementById(id);if(!el)return false;
+  const y=el.getBoundingClientRect().top+scrollY-64;
+  document.querySelectorAll('.site-h nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+id));
+  spyLock=Date.now()+1200;
+  window.scrollTo({top:Math.max(0,y),behavior:smooth&&!RM.matches?'smooth':'auto'});
+  try{history.replaceState(null,'','#'+id)}catch(e){}
+  return true;
+}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('a[href^="#"]');if(!a||e.defaultPrevented||e.metaKey||e.ctrlKey)return;
+  const id=a.getAttribute('href').slice(1);
+  if(view()==='inicio'&&LANDING_ANCHORS.includes(id)&&goSection(id)){e.preventDefault()}
+},true);
+let spyRaf=0;addEventListener('scroll',()=>{if(!spyRaf)spyRaf=requestAnimationFrame(()=>{spyRaf=0;spy()})},{passive:true});
 function setHdr(){const h=document.querySelector('.site-h.over');if(h)h.classList.toggle('solid',scrollY>24)}
 addEventListener('scroll',setHdr,{passive:true});
 function setTbar(){const t=document.querySelector('.testbar');document.documentElement.style.setProperty('--tbar',(t?t.offsetHeight:0)+'px')}

@@ -13,7 +13,7 @@ Protótipo navegável em [`prototipo/index.html`](prototipo/index.html). É um a
 - **Área do atleta:** número de peito, QR code para retirada do kit, status do documento e do pagamento, cancelamento em até 7 dias.
 - **Painel da organização** (link "Organização" no rodapé): cinco telas. Resumo, Inscritos (com ficha do atleta e reembolso), Pagamentos (financeiro e contestações), Entrega de kits e Ajustes (preços, conta do administrador, organização e equipe).
 
-Os dados são de exemplo, baseados na edição 2026, e ficam só no navegador (localStorage). Nenhum pagamento é real.
+Os dados são de exemplo, baseados na edição 2027, e ficam só no navegador (localStorage). Nenhum pagamento é real.
 
 ## Modo de teste
 
