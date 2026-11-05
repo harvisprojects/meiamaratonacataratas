@@ -39,9 +39,9 @@ p{margin:0}
 .num{font-variant-numeric:tabular-nums}
 
 /* botões */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:6px;background:var(--sun);color:var(--on-sun);font:700 15px/1 var(--body);padding:15px 22px;text-decoration:none;cursor:pointer;transition:transform .15s ease,filter .15s ease;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:6px;background:var(--sun);color:var(--on-sun);font:700 15px/1 var(--body);padding:15px 22px;text-decoration:none;cursor:pointer;transition:transform 160ms var(--ease-out),filter .15s ease,box-shadow .15s ease;white-space:nowrap}
 .btn:hover{filter:brightness(1.05)}
-.btn:active{transform:translateY(1px)}
+.btn:active:not([disabled]){transform:scale(.97)}
 .btn[disabled]{opacity:.55;cursor:default}
 .btn-ink{background:var(--ink);color:var(--bg)}
 .btn-line{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
@@ -196,8 +196,8 @@ section[id]{scroll-margin-top:64px}
 .faq details:last-child{border-bottom:1px solid var(--line)}
 .faq summary{list-style:none;cursor:pointer;padding:20px 40px 20px 0;font-weight:600;font-size:17px;position:relative}
 .faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"+";position:absolute;right:4px;top:16px;font:400 26px/1 var(--body);color:var(--muted)}
-.faq details[open] summary::after{content:"–"}
+.faq summary::after{content:"+";position:absolute;right:4px;top:16px;font:400 26px/1 var(--body);color:var(--muted);transition:transform 200ms var(--ease-out),color .2s ease}
+.faq details[open] summary::after{transform:rotate(45deg);color:var(--ink)}
 .faq details p{padding:0 0 22px;color:var(--muted);max-width:64ch}
 
 /* chamada final + rodapé */
@@ -380,6 +380,66 @@ td .sub{display:block;font-size:12px;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:8px;font-size:14px;z-index:60;max-width:calc(100% - 32px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
 .ologin{min-height:calc(100vh - 34px);display:grid;place-items:center;padding:40px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px));background:var(--surface)}
 .ologin form{width:min(400px,100%);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:32px;display:flex;flex-direction:column;gap:16px}
+
+/* ---------- movimento e interação ----------
+   curvas fortes (ease-out para entradas), só transform e opacity; tudo respeita prefers-reduced-motion */
+:root{--ease-out:cubic-bezier(.23,1,.32,1);--ease-in-out:cubic-bezier(.77,0,.175,1);interpolate-size:allow-keywords}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes settle{from{transform:scale(1.06)}}
+@keyframes fadein{from{opacity:0}}
+@keyframes pop{from{opacity:0;transform:scale(.96)}}
+@keyframes drop{from{opacity:0;transform:translateY(-4px)}}
+/* entrada do hero: só na primeira carga */
+.intro .hero-bg{animation:settle 1600ms var(--ease-out) both}
+.intro .hero-txt>*{animation:rise 700ms var(--ease-out) both}
+.intro .hero-txt>:nth-child(2){animation-delay:70ms}
+.intro .hero-txt>:nth-child(3){animation-delay:140ms}
+.intro .hero-txt>:nth-child(4){animation-delay:210ms}
+.intro .hero-facts>div{animation:rise 700ms var(--ease-out) both}
+.intro .hero-facts>:nth-child(1){animation-delay:320ms}
+.intro .hero-facts>:nth-child(2){animation-delay:380ms}
+.intro .hero-facts>:nth-child(3){animation-delay:440ms}
+.intro .hero-facts>:nth-child(4){animation-delay:500ms}
+/* revelação ao rolar (uma vez por elemento) */
+.js-rv [data-rv]{opacity:0;transform:translateY(18px);transition:opacity 600ms var(--ease-out),transform 600ms var(--ease-out);transition-delay:var(--d,0ms)}
+.js-rv [data-rv].in{opacity:1;transform:none}
+/* troca de tela e sucesso do pagamento */
+.bib.celebrate{animation:pop 500ms var(--ease-out) both}
+/* FAQ abre com altura + fade */
+.faq details::details-content{height:0;overflow:clip;transition:height 300ms var(--ease-out),content-visibility 300ms allow-discrete}
+.faq details[open]::details-content{height:auto}
+.faq details[open] p{animation:drop 300ms var(--ease-out)}
+/* toast entra e sai pela borda de baixo */
+.toast{opacity:0;transform:translate(-50%,16px);transition:opacity 250ms var(--ease-out),transform 300ms var(--ease-out)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+/* menu: indica a seção atual */
+.site-h nav a{position:relative;transition:color .2s ease}
+.site-h nav a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--sun);transform:scaleX(0);transform-origin:left;transition:transform 250ms var(--ease-out)}
+.site-h nav a.on{color:var(--ink)}
+.site-h nav a.on::after{transform:scaleX(1)}
+/* opções do formulário: retorno ao toque */
+.opt{transition:transform 160ms var(--ease-out),border-color .15s ease}
+.opt:active{transform:scale(.98)}
+@media (hover:hover) and (pointer:fine){
+  .dist .photo img{transition:transform 700ms var(--ease-out)}
+  .dist:hover .photo img{transform:scale(1.04)}
+  .dist{transition:border-color .2s ease}
+  .dist:hover{border-color:var(--ink)}
+  .pro-list li{transition:transform 200ms var(--ease-out)}
+  .pro-list li:hover{transform:translateX(4px)}
+  .pro-img img{transition:transform 900ms var(--ease-out)}
+  .pro-img:hover img{transform:scale(1.03)}
+  .faq summary:hover::after{color:var(--ink)}
+}
+@media (prefers-reduced-motion:reduce){
+  .intro .hero-bg{animation:none}
+  .intro .hero-txt>*,.intro .hero-facts>div{animation:fadein 400ms ease both}
+  .js-rv [data-rv]{transform:none;transition:opacity 400ms ease}
+  .bib.celebrate{animation:fadein 400ms ease both}
+  .faq details[open] p{animation:fadein 200ms ease}
+  .toast{transform:translate(-50%,0)}
+  .btn:active:not([disabled]),.opt:active{transform:none}
+}
 </style>
 
 <div id="app"></div>
@@ -494,7 +554,7 @@ const left=()=>Math.max(0,DB.cfg.limit-active());
 
 /* ---------- interface comum ---------- */
 let toastT;
-function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3400)}
+function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('on')));clearTimeout(toastT);toastT=setTimeout(()=>{t.classList.remove('on');toastT=setTimeout(()=>{t.hidden=true},300)},3400)}
 function testBar(){return `<div class="testbar"><div class="wrap"><b>Modo de teste</b><span>Dados e pagamentos fictícios</span><span class="sp"></span>
 <button data-act="quick-insc">Inscrição rápida</button><button data-act="quick-athlete">Entrar como atleta</button><button data-act="quick-org">Painel da organização</button><button data-act="reset">Zerar dados</button></div></div>`}
 function siteHeader(over){return `<header class="site-h${over?' over':''}"><div class="wrap"><a class="brand" href="#inicio">Meia <i>3</i> Fronteiras</a>
@@ -741,7 +801,7 @@ function regCard(r){
   const [stl,stc]=ST[r.status],D=DIST[r.dist];
   const canCancel=r.status==='pago'&&now()-r.created<=7*DAY&&now()<EVENT;
   let top='';
-  if(r.status==='pago'||r.status==='contestado')top=`<div class="bib"><div class="qr">${qrSVG(r.protocol)}</div><div style="min-width:0"><p class="eyebrow">Número de peito · ${D.label}</p><p class="n">${r.bib}</p><p style="margin-top:12px;font-weight:600">${esc(r.name)}</p><p class="small muted" style="margin-top:4px">Mostre este QR code e um documento com foto na retirada do kit.</p></div></div>`;
+  if(r.status==='pago'||r.status==='contestado')top=`<div class="bib${FLASH&&FLASH.startsWith('Inscrição confirmada')?' celebrate':''}"><div class="qr">${qrSVG(r.protocol)}</div><div style="min-width:0"><p class="eyebrow">Número de peito · ${D.label}</p><p class="n">${r.bib}</p><p style="margin-top:12px;font-weight:600">${esc(r.name)}</p><p class="small muted" style="margin-top:4px">Mostre este QR code e um documento com foto na retirada do kit.</p></div></div>`;
   else if(r.status==='pendente')top=`<div class="alert warn">Pagamento pendente. A vaga fica reservada por 30 minutos a partir da inscrição. <button class="link" data-act="pay-now" data-id="${r.id}">Pagar agora</button></div>`;
   let act='';
   if(CANCEL===r.id)act=`<div class="confirm"><span>Cancelar a inscrição e devolver ${money(r.total)}?</span><button class="btn btn-sm" style="background:var(--crit);color:#fff" data-act="cancel-yes" data-id="${r.id}">Cancelar inscrição</button><button class="link" data-act="cancel-no">Manter</button></div>`;
@@ -908,7 +968,7 @@ function render(force){
   if(v!==lastView||force){if(LANDING_ANCHORS.includes(h)){const el=document.getElementById(h);if(el)el.scrollIntoView()}else window.scrollTo(0,0)}
   else if(LANDING_ANCHORS.includes(h)){const el=document.getElementById(h);if(el)el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
   if(v!=='atleta')FLASH='';
-  setHdr();lastView=v;
+  setupMotion(v);routeIn(v,v!==lastView);setHdr();lastView=v;
 }
 function rerender(){
   const a=document.activeElement,id=a&&a.id,s=a&&'selectionStart' in a?(()=>{try{return a.selectionStart}catch(e){return null}})():null;
@@ -916,6 +976,28 @@ function rerender(){
   if(id){const el=document.getElementById(id);if(el){el.focus({preventScroll:true});try{if(s!=null)el.setSelectionRange(s,s)}catch(e){}}}
 }
 addEventListener('hashchange',()=>render());
+/* revelação ao rolar, seção atual no menu, entrada do hero e troca de tela */
+const RM=matchMedia('(prefers-reduced-motion:reduce)');
+const RV_GROUPS=['.sec-h','.dists>.dist','.course>*','.course-txt>div','.pro-txt>:not(ul)','.pro-list>li','.pro-img','.perks>.eyebrow','.perks-g>.perk','.info>div','.faq>details','.final .wrap>*'];
+let rvIO=null,spyIO=null,firstPaint=true;
+if('IntersectionObserver' in window)document.documentElement.classList.add('js-rv');
+function setupMotion(v){
+  if(rvIO)rvIO.disconnect();if(spyIO)spyIO.disconnect();
+  if(v!=='inicio'||!('IntersectionObserver' in window))return;
+  rvIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting||e.boundingClientRect.bottom<0){e.target.classList.add('in');rvIO.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px',threshold:.12});
+  RV_GROUPS.forEach(sel=>document.querySelectorAll(sel).forEach((el,i)=>{el.dataset.rv='';el.style.setProperty('--d',Math.min(i,6)*60+'ms');rvIO.observe(el)}));
+  const links=[...document.querySelectorAll('.site-h nav a')];
+  spyIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-45% 0px -50% 0px'});
+  ['prova','kits','percurso','info','duvidas'].forEach(id=>{const el=document.getElementById(id);if(el)spyIO.observe(el)});
+  const hero=document.querySelector('.hero');
+  if(hero)new IntersectionObserver((es,o)=>es.forEach(e=>{if(e.isIntersecting&&e.intersectionRatio>.5)links.forEach(a=>a.classList.remove('on'))}),{threshold:[.5]}).observe(hero);
+}
+function routeIn(v,changed){
+  const de=document.documentElement;
+  if(v==='inicio'&&firstPaint&&!location.hash.slice(1).match(/^(prova|kits|percurso|info|duvidas)$/)){de.classList.add('intro');setTimeout(()=>de.classList.remove('intro'),1800)}
+  else if(changed&&!firstPaint&&['inscricao','pagamento','atleta'].includes(v)){const m=$('#app main');if(m&&m.animate)m.animate(RM.matches?[{opacity:0},{opacity:1}]:[{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'none'}],{duration:240,easing:'cubic-bezier(.23,1,.32,1)'})}
+  firstPaint=false;
+}
 function setHdr(){const h=document.querySelector('.site-h.over');if(h)h.classList.toggle('solid',scrollY>24)}
 addEventListener('scroll',setHdr,{passive:true});
 function setTbar(){const t=document.querySelector('.testbar');document.documentElement.style.setProperty('--tbar',(t?t.offsetHeight:0)+'px')}
