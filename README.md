@@ -15,7 +15,14 @@ Protótipo navegável em [`prototipo/index.html`](prototipo/index.html). É um a
 
 Os dados são de exemplo, baseados na edição 2026, e ficam só no navegador (localStorage). Nenhum pagamento é real.
 
-Para testar o cartão: `4242 4242 4242 4242` aprova e `4000 0000 0000 0002` é recusado.
+## Modo de teste
+
+Tudo vem preenchido com dados fictícios para validar os fluxos rápido:
+
+- **Barra "Modo de teste"** no topo de todas as páginas, com atalhos "Entrar como atleta" e "Entrar como organização".
+- **Inscrição** já abre preenchida com um atleta fictício (CPF válido gerado na hora). "Novos dados fictícios" gera outro; "Limpar" esvazia.
+- **Checkout** já vem com o cartão de teste `4242 4242 4242 4242` (aprovado). O link "Testar cartão recusado" troca para `4000 0000 0000 0002`. No Pix, o botão "Simular Pix recebido" confirma o pagamento.
+- **Área do atleta** e **painel da organização** abrem com e-mails fictícios já preenchidos (`@exemplo.com`).
 
 ## Próximo passo
 

@@ -177,6 +177,10 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
 .kv dd{margin:0;overflow-wrap:anywhere}
 @media (max-width:520px){.kv{grid-template-columns:1fr;gap:2px}.kv dd{margin-bottom:8px}}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:12px 20px;border-radius:999px;font-size:14px;z-index:60;max-width:calc(100% - 40px)}
+.demo-bar{background:var(--soft);border-bottom:1px solid var(--line);font-size:13px}
+.demo-bar .wrap{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;padding-block:8px}
+.demo-bar b{font-weight:600}
+.demo-bar .link{font-size:13px}
 .demo{font-size:12px;color:var(--muted);text-align:center;padding:10px 20px;border-top:1px solid var(--line)}
 /* organizador */
 .otabs{display:flex;gap:28px;overflow-x:auto;overflow-y:hidden;border-bottom:1px solid var(--line);margin-bottom:36px;scrollbar-width:none}
@@ -248,7 +252,9 @@ const COUNTRIES=[['BR','Brasil'],['PY','Paraguai'],['AR','Argentina'],['XX','Out
 let DB={regs:[],session:null};
 try{const s=localStorage.getItem(KEY);if(s)DB=JSON.parse(s)}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}};
-const S={draft:null,errors:{},pay:'pix',inst:1,cardErr:'',login:{email:'',sent:false,err:''},flash:'',cancel:null,checkout:null};
+const S={draft:null,errors:{},pay:'pix',inst:1,cardErr:'',login:{email:'',sent:false,err:''},flash:'',cancel:null,checkout:null,card:null};
+const TEST_CARD={ok:'4242 4242 4242 4242',bad:'4000 0000 0000 0002'};
+function demoAthlete(){const paid=DB.regs.filter(r=>r.status==='pago');const mine=paid.filter(r=>!r.demo).sort((a,b)=>b.created-a.created)[0];return (mine||paid[0]||{email:''}).email}
 
 /* utils */
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -272,6 +278,12 @@ const route=()=>{const h=location.hash.slice(1);return ROUTES.includes(h)?h:'ini
 const go=r=>{if(location.hash.slice(1)===r)render();else location.hash=r;window.scrollTo(0,0)};
 window.addEventListener('hashchange',()=>{render();window.scrollTo(0,0)});
 
+function demoBar(){
+  const em=demoAthlete();
+  return '<div class="demo-bar"><div class="wrap"><b>Modo de teste</b><span class="muted">Dados e pagamentos fictícios.</span>'+
+  (em?'<span class="muted">Atleta: <span class="mono">'+esc(em)+'</span></span><button class="link" data-act="quick-athlete">Entrar como atleta</button>':'')+
+  '<span class="muted">Organização: <span class="mono">'+esc(DB.admin?DB.admin.email:'organizacao@exemplo.com')+'</span></span><button class="link" data-act="quick-org">Entrar como organização</button></div></div>';
+}
 function render(){
   const r=route();
   let html;
@@ -280,7 +292,7 @@ function render(){
   else if(r==='portal')html=pagePortal();
   else if(r==='organizador')html=pageOrg();
   else html=pageLanding();
-  document.getElementById('app').innerHTML=html+'<p class="demo">Protótipo com dados da edição 2026. Data simulada: 20/08/2026. Nenhum pagamento é real.</p>';
+  document.getElementById('app').innerHTML=demoBar()+html+'<p class="demo">Protótipo com dados da edição 2026. Data simulada: 20/08/2026. Nenhum pagamento é real.</p>';
   tick();
   if(r==='organizador'&&DB.org&&ORG.tab==='inscritos')orgTable();
 }
@@ -346,7 +358,7 @@ function flowHeader(label){
   return '<header class="top"><div class="wrap"><button class="logo" data-go="inicio">3 Fronteiras</button><span class="muted small" style="margin-left:auto">'+label+'</span></div></header>';
 }
 function newDraft(cat){return{modality:'21',cat:cat||'geral',tier:'basico',country:'BR',name:'',birth:'',sex:'',cpf:'',docType:'RG',docNum:'',email:'',phone:'',shirt:'',emergency:'',docFile:'',laudoFile:'',t1:false,t2:false}}
-const D=()=>S.draft||(S.draft=newDraft());
+const D=()=>{if(!S.draft){S.draft=newDraft();fill()}return S.draft};
 function field(k,label,input,cls){const e=S.errors[k];return '<div class="f'+(e?' bad':'')+(cls?' '+cls:'')+'"><label for="i-'+k+'">'+label+'</label>'+input+(e?'<span class="err">'+esc(e)+'</span>':'')+'</div>'}
 const inp=(k,type,attrs)=>'<input id="i-'+k+'" data-f="'+k+'" type="'+(type||'text')+'" value="'+esc(D()[k])+'" '+(attrs||'')+'>';
 const sel=(k,opts,ph)=>'<select id="i-'+k+'" data-f="'+k+'">'+(ph?'<option value="">'+ph+'</option>':'')+opts.map(o=>{const[v,l]=Array.isArray(o)?o:[o,o];return '<option value="'+esc(v)+'"'+(D()[k]===v?' selected':'')+'>'+esc(l)+'</option>'}).join('')+'</select>';
@@ -362,7 +374,7 @@ function pageForm(){
   '<div class="block"><h2><span class="mono">01</span>Percurso</h2><div class="seg">'+radio('modality','21','21 km','Largada em Ciudad del Este')+radio('modality','10','10,5 km','Largada em Foz do Iguaçu')+'</div></div>'+
   '<div class="block"><h2><span class="mono">02</span>Categoria</h2><div class="seg">'+radio('cat','geral','Geral',money(PRICE.geral))+radio('cat','60','60+',money(PRICE.reduzido))+radio('cat','pcd','PCD',money(PRICE.reduzido)+' · com laudo')+radio('cat','cad','Cadeirante',money(PRICE.reduzido))+'</div>'+(S.errors.cat?'<span class="small" style="color:var(--crit)">'+esc(S.errors.cat)+'</span>':'')+'</div>'+
   '<div class="block"><h2><span class="mono">03</span>Kit</h2><div class="seg">'+KIT_ORDER.map(k=>radio('tier',k,KITS[k].name,KITS[k].add?'+ '+money(KITS[k].add):'incluso')).join('')+'</div><p class="small muted">'+esc(KITS[d.tier].items.join(' · '))+'</p></div>'+
-  '<div class="block"><div class="row between"><h2><span class="mono">04</span>Seus dados</h2><button type="button" class="link" data-act="fill">Preencher exemplo</button></div><div class="fields">'+
+  '<div class="block"><div class="row between"><h2><span class="mono">04</span>Seus dados</h2><span class="row" style="gap:16px"><button type="button" class="link" data-act="fill">Novos dados fictícios</button><button type="button" class="link" style="color:var(--muted)" data-act="clear">Limpar</button></span></div><div class="fields">'+
     field('country','Nacionalidade',sel('country',COUNTRIES))+
     field('name','Nome completo',inp('name','text','autocomplete="name"'))+
     field('birth','Data de nascimento',inp('birth','date'))+
@@ -420,6 +432,7 @@ function pageCheckout(){
   const r=byId(S.checkout);
   if(!r||r.status!=='aguardando'){return flowHeader('Pagamento')+'<main class="wrap narrow flow"><h1>Nada para pagar</h1><p class="muted">Comece pela inscrição.</p><button class="btn" style="margin-top:20px" data-go="inscricao">Ir para a inscrição</button></main>'}
   const br=r.country==='BR';if(!br)S.pay='card';
+  if(!S.card)S.card={cn:TEST_CARD.ok,ch:r.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase(),cx:'12/30',cv:'123'};
   const t=totals(r,S.pay==='card'?S.inst:1);
   let body='';
   if(S.pay==='pix'){
@@ -432,13 +445,13 @@ function pageCheckout(){
     const opts=[];for(let i=1;i<=MAX_INST;i++){const ti=totals(r,i);opts.push('<option value="'+i+'"'+(S.inst===i?' selected':'')+'>'+i+'x de '+money(ti.total/i)+(i===1?' sem juros':' (total '+money(ti.total)+')')+'</option>')}
     const ce=k=>S.errors[k]?'<span class="err">'+S.errors[k]+'</span>':'';
     body='<form data-form="card" novalidate><div class="fields">'+
-    '<div class="f full'+(S.errors.cn?' bad':'')+'"><label for="cn">Número do cartão</label><input id="cn" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000">'+ce('cn')+'</div>'+
-    '<div class="f full'+(S.errors.ch?' bad':'')+'"><label for="ch">Nome no cartão</label><input id="ch" autocomplete="cc-name">'+ce('ch')+'</div>'+
-    '<div class="f'+(S.errors.cx?' bad':'')+'"><label for="cx">Validade</label><input id="cx" placeholder="MM/AA" autocomplete="cc-exp">'+ce('cx')+'</div>'+
-    '<div class="f'+(S.errors.cv?' bad':'')+'"><label for="cv">CVV</label><input id="cv" inputmode="numeric" placeholder="123" autocomplete="cc-csc">'+ce('cv')+'</div>'+
+    '<div class="f full'+(S.errors.cn?' bad':'')+'"><label for="cn">Número do cartão</label><input id="cn" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000" value="'+esc(S.card.cn)+'">'+ce('cn')+'</div>'+
+    '<div class="f full'+(S.errors.ch?' bad':'')+'"><label for="ch">Nome no cartão</label><input id="ch" autocomplete="cc-name" value="'+esc(S.card.ch)+'">'+ce('ch')+'</div>'+
+    '<div class="f'+(S.errors.cx?' bad':'')+'"><label for="cx">Validade</label><input id="cx" placeholder="MM/AA" autocomplete="cc-exp" value="'+esc(S.card.cx)+'">'+ce('cx')+'</div>'+
+    '<div class="f'+(S.errors.cv?' bad':'')+'"><label for="cv">CVV</label><input id="cv" inputmode="numeric" placeholder="123" autocomplete="cc-csc" value="'+esc(S.card.cv)+'">'+ce('cv')+'</div>'+
     '<div class="f full"><label for="inst">Parcelas</label><select id="inst" data-act-change="inst">'+opts.join('')+'</select></div></div>'+
     (S.cardErr?'<p class="alert" style="margin-top:16px">'+esc(S.cardErr)+'</p>':'')+
-    '<p class="small muted" style="margin-top:14px">Teste: 4242 4242 4242 4242 aprova · 4000 0000 0000 0002 é recusado.</p>'+
+    '<p class="small muted" style="margin-top:14px">'+(S.card.cn===TEST_CARD.bad?'Cartão de teste que é <b>recusado</b> pelo banco. <button type="button" class="link" data-act="card-ok">Usar cartão aprovado</button>':'Cartão de teste já preenchido (aprovado). <button type="button" class="link" data-act="card-bad">Testar cartão recusado</button>')+'</p>'+
     '<button class="btn btn-accent btn-lg btn-block" style="margin-top:16px" type="submit">Pagar '+money(t.total)+'</button></form>';
   }
   return '<div class="gw-bar"><div class="wrap"><span class="gw-lock">🔒 Pagamento seguro</span><span class="muted">Ambiente do gateway de pagamento</span></div></div>'+
@@ -455,6 +468,7 @@ function pageCheckout(){
   '<button class="link" style="margin-top:16px" data-act="abandon">Cancelar e voltar ao site</button></aside></main>';
 }
 function confirmPayment(r,method,inst){
+  S.card=null;
   const t=totals(r,inst);
   const bibs=DB.regs.filter(x=>x.modality===r.modality&&x.bib).map(x=>x.bib);
   Object.assign(r,{status:'pago',method,inst,interest:t.interest,total:t.total,paidAt:simNow(),bib:bibs.length?Math.max.apply(null,bibs)+1:(r.modality==='21'?101:5001)});
@@ -470,7 +484,7 @@ function pagePortal(){
     const L=S.login;
     return top+'<main class="wrap narrow flow"><p class="eyebrow">Área do atleta</p><h1>Entrar</h1>'+
     (L.sent?'<p style="margin-top:12px">Enviamos um link de acesso para <b>'+esc(L.email)+'</b>. Ele vale por 15 minutos.</p><div class="row" style="margin-top:24px"><button class="btn" data-act="magic">Abrir link do e-mail (simulação)</button><button class="link" data-act="relogin">Usar outro e-mail</button></div>'
-    :'<p class="muted" style="margin-top:8px">Digite o e-mail usado na inscrição. Mandamos um link de acesso, sem senha.</p><form data-form="login" novalidate style="margin-top:28px;display:flex;flex-direction:column;gap:14px"><div class="f'+(L.err?' bad':'')+'"><label for="lg">E-mail</label><input id="lg" type="email" autocomplete="email" value="'+esc(L.email)+'">'+(L.err?'<span class="err">'+esc(L.err)+'</span>':'')+'</div><button class="btn btn-lg" type="submit">Receber link de acesso</button></form>'+
+    :'<p class="muted" style="margin-top:8px">Digite o e-mail usado na inscrição. Mandamos um link de acesso, sem senha.</p><form data-form="login" novalidate style="margin-top:28px;display:flex;flex-direction:column;gap:14px"><div class="f'+(L.err?' bad':'')+'"><label for="lg">E-mail</label><input id="lg" type="email" autocomplete="email" value="'+esc(L.email||demoAthlete())+'">'+(L.err?'<span class="err">'+esc(L.err)+'</span>':'')+'</div><button class="btn btn-lg" type="submit">Receber link de acesso</button><p class="small muted">Modo de teste: e-mail de um atleta fictício já preenchido.</p></form>'+
     (DB.regs.some(r=>r.status==='pago')?'':'<p class="note" style="margin-top:20px">Ainda não há inscrições neste protótipo. Faça uma primeiro.</p>'))+'</main>';
   }
   const mine=DB.regs.filter(r=>r.email.toLowerCase()===DB.session&&(r.status==='pago'||r.status==='reembolsado')).sort((a,b)=>b.created-a.created);
@@ -553,7 +567,7 @@ function pageOrg(){
   const top='<header class="top"><div class="wrap"><button class="logo" data-go="inicio">3 Fronteiras</button><span class="small muted">Organização</span>'+
     (DB.org?'<div class="top-r"><button class="link hide-xs" style="color:var(--muted);font-weight:500" data-oa="tab" data-v="conta">'+esc(DB.admin.name)+' · '+ROLES[DB.admin.role][0]+'</button><button class="btn btn-ghost btn-sm" data-oa="logout">Sair</button></div>':'')+'</div></header>';
   if(!DB.org)return top+'<main class="wrap narrow flow"><p class="eyebrow">Acesso restrito</p><h1>Painel da organização</h1><p class="muted" style="margin-top:8px">Só a equipe da prova entra aqui. No sistema real, cada pessoa tem login próprio e permissões (financeiro, documentos, balcão de kits).</p>'+
-    '<form data-form="olog" novalidate style="margin-top:28px;display:flex;flex-direction:column;gap:14px"><div class="f"><label for="oe">E-mail da equipe</label><input id="oe" type="email" value="'+esc(DB.admin.email)+'"></div><button class="btn btn-lg" type="submit">Entrar (simulação)</button></form></main>';
+    '<form data-form="olog" novalidate style="margin-top:28px;display:flex;flex-direction:column;gap:14px"><div class="f"><label for="oe">E-mail da equipe</label><input id="oe" type="email" value="'+esc(DB.admin.email)+'"></div><button class="btn btn-lg" type="submit">Entrar (simulação)</button><p class="small muted">Modo de teste: e-mail fictício do administrador já preenchido.</p></form></main>';
   const regs=DB.regs,paid=regs.filter(r=>PAIDS.includes(r.status));
   const nDoc=paid.filter(r=>r.doc==='analise').length,nDisp=regs.filter(r=>r.dispute&&r.dispute.status==='aberta').length;
   const tabs='<nav class="otabs" aria-label="Seções do painel">'+OTABS.map(([k,l])=>'<button data-oa="tab" data-v="'+k+'" aria-current="'+(ORG.tab===k)+'">'+l+(k==='documentos'&&nDoc?'<span class="cnt">'+nDoc+'</span>':'')+(k==='contestacoes'&&nDisp?'<span class="cnt">'+nDisp+'</span>':'')+'</button>').join('')+'</nav>';
@@ -813,12 +827,16 @@ function tick(){
 /* events */
 document.addEventListener('click',e=>{
   const g=e.target.closest('[data-go]');
-  if(g){const to=g.dataset.go;if(to==='inscricao'&&(g.dataset.cat||g.dataset.tier||!S.draft)){S.draft=newDraft(g.dataset.cat);if(g.dataset.tier)S.draft.tier=g.dataset.tier;S.errors={}}go(to);return}
+  if(g){const to=g.dataset.go;if(to==='inscricao'&&(g.dataset.cat||g.dataset.tier||!S.draft)){S.draft=newDraft(g.dataset.cat);if(g.dataset.tier)S.draft.tier=g.dataset.tier;fill();S.errors={}}go(to);return}
   const sc=e.target.closest('[data-scroll]');
   if(sc){const el=document.getElementById(sc.dataset.scroll);if(el)el.scrollIntoView();return}
   const a=e.target.closest('[data-act]');if(!a)return;
   const act=a.dataset.act;
   if(act==='fill'){capture();fill();render()}
+  else if(act==='clear'){const d=D();S.draft=Object.assign(newDraft(d.cat),{modality:d.modality,tier:d.tier});S.errors={};render()}
+  else if(act==='card-bad'||act==='card-ok'){const v=id=>{const el=document.getElementById(id);return el?el.value:''};S.card={cn:act==='card-bad'?TEST_CARD.bad:TEST_CARD.ok,ch:v('ch'),cx:v('cx'),cv:v('cv')};S.cardErr='';S.errors={};render()}
+  else if(act==='quick-athlete'){DB.session=demoAthlete().toLowerCase();save();go('portal')}
+  else if(act==='quick-org'){DB.org=true;if(DB.admin)DB.admin.lastLogin=simNow();save();go('organizador')}
   else if(act==='method'){S.pay=a.dataset.v;S.cardErr='';S.errors={};if(S.pay==='pix')S.inst=1;render()}
   else if(act==='copy'){const txt=document.getElementById('pixcode').textContent;try{navigator.clipboard.writeText(txt).then(()=>toast('Código Pix copiado'),()=>selText('pixcode'))}catch(x){selText('pixcode')}}
   else if(act==='pay-pix'){confirmPayment(byId(S.checkout),'pix',1)}
@@ -838,7 +856,7 @@ document.addEventListener('change',e=>{
   if(el.dataset.actChange==='inst'){S.inst=+el.value;render();return}
   if(route()!=='inscricao'||!el.dataset.f)return;
   const k=el.dataset.f;
-  if(['modality','cat','country','tier'].includes(k)){capture();const d=D();if(k==='country')d.docType=DOCS[d.country][0];if(k==='cat')delete S.errors.cat;render()}
+  if(['modality','cat','country','tier'].includes(k)){capture();const d=D();if(k==='country')d.docType=DOCS[d.country][0];if(k==='cat'){delete S.errors.cat;if(d.cat==='pcd'&&!d.laudoFile)d.laudoFile='laudo_medico.pdf';if(d.cat==='60'&&d.birth&&ageAt(d.birth)<60)d.birth='1961-04-12'}if(k==='country'&&d.name)fill();render()}
   else if(el.type==='file'){capture();delete S.errors[k];render()}
 });
 document.addEventListener('submit',e=>{
@@ -846,8 +864,8 @@ document.addEventListener('submit',e=>{
   if(f==='reg'){capture();if(!validate()){render();const bad=document.querySelector('.bad input,.bad select,.chk .err');if(bad)bad.scrollIntoView({block:'center'});return}
     const d=D(),n=DB.regs.length+1;
     const r=Object.assign({},d,{id:'r'+Date.now(),protocol:'3F26-'+String(n).padStart(6,'0'),ip:'177.84.12.201',kit:false,kitAt:null,dispute:null,docReason:'',base:priceOf(d.cat),kitAdd:KITS[d.tier].add,fee:FEE,interest:0,total:priceOf(d.cat)+KITS[d.tier].add+FEE,status:'aguardando',created:simNow(),doc:'analise',bib:null,method:null,inst:1,paidAt:null,refundedAt:null});
-    DB.regs.push(r);save();S.checkout=r.id;S.pay=r.country==='BR'?'pix':'card';S.inst=1;S.errors={};S.cardErr='';go('checkout')}
-  if(f==='card'){const v=id=>document.getElementById(id).value.trim(),n=v('cn').replace(/\D/g,''),e2={};
+    DB.regs.push(r);save();S.checkout=r.id;S.card=null;S.pay=r.country==='BR'?'pix':'card';S.inst=1;S.errors={};S.cardErr='';go('checkout')}
+  if(f==='card'){const v=id=>document.getElementById(id).value.trim();S.card={cn:v('cn'),ch:v('ch'),cx:v('cx'),cv:v('cv')};const n=v('cn').replace(/\D/g,''),e2={};
     if(!luhn(n))e2.cn='Número de cartão inválido.';if(!v('ch'))e2.ch='Preencha este campo.';
     if(!/^(0[1-9]|1[0-2])\/?\d{2}$/.test(v('cx')))e2.cx='Use MM/AA.';if(!/^\d{3,4}$/.test(v('cv')))e2.cv='3 ou 4 dígitos.';
     S.errors=e2;S.cardErr='';if(Object.keys(e2).length){render();return}
