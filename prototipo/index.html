@@ -231,7 +231,7 @@ const DAY=864e5;
 /* datas da edição 2026; o "hoje" do protótipo é simulado para o site aparecer com inscrições abertas */
 const SIM_TODAY=new Date('2026-08-20T10:00:00-03:00').getTime(),LOAD=Date.now(),simNow=()=>SIM_TODAY+(Date.now()-LOAD);
 const EVENT=new Date('2026-10-11T06:30:00-03:00');
-const PRICE={geral:300,reduzido:250},FEE=20,MAX_INST=6,INST_RATE=.0199,CHANGE_FEE=80;
+const PRICE={geral:300,reduzido:250},INST_RATE=.0199;let FEE=20,MAX_INST=6,CHANGE_FEE=80;
 const KEY='tf-v4';
 const DOCS={BR:['RG','CNH','Passaporte'],PY:['Cédula de identidad','Pasaporte'],AR:['DNI','Pasaporte'],XX:['Passaporte']};
 const COUNTRIES=[['BR','Brasil'],['PY','Paraguai'],['AR','Argentina'],['XX','Outro país']];
@@ -486,9 +486,9 @@ function regCard(r){
 }
 
 /* ============ PAINEL DO ORGANIZADOR ============ */
-const LIMIT=2500,PAIDS=['pago','contestado'];
+let LIMIT=2500;const PAIDS=['pago','contestado'];
 const ORG={tab:'geral',q:'',fmod:'',fst:'',fdoc:'',page:0,sel:null,confirm:false,kitQ:'',kitSel:null,disp:null};
-const OTABS=[['geral','Visão geral'],['inscritos','Inscritos'],['documentos','Documentos'],['financeiro','Financeiro'],['contestacoes','Contestações'],['kits','Entrega de kits']];
+const OTABS=[['geral','Visão geral'],['inscritos','Inscritos'],['documentos','Documentos'],['financeiro','Financeiro'],['contestacoes','Contestações'],['kits','Entrega de kits'],['conta','Conta e equipe']];
 const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const gwFee=r=>r.method==='pix'?r.total*.0099:r.total*.0399+.39;
 const flagTxt={BR:'Brasil',PY:'Paraguai',AR:'Argentina',XX:'Outro'};
@@ -536,13 +536,13 @@ function ensureSeed(){
 
 function pageOrg(){
   const top='<header class="top"><div class="wrap"><button class="logo" data-go="inicio">3 Fronteiras</button><span class="small muted">Organização</span>'+
-    (DB.org?'<div class="top-r"><span class="small muted hide-xs">Paraná Chip</span><button class="btn btn-ghost btn-sm" data-oa="logout">Sair</button></div>':'')+'</div></header>';
+    (DB.org?'<div class="top-r"><button class="link hide-xs" style="color:var(--muted);font-weight:500" data-oa="tab" data-v="conta">'+esc(DB.admin.name)+' · '+ROLES[DB.admin.role][0]+'</button><button class="btn btn-ghost btn-sm" data-oa="logout">Sair</button></div>':'')+'</div></header>';
   if(!DB.org)return top+'<main class="wrap narrow flow"><p class="eyebrow">Acesso restrito</p><h1>Painel da organização</h1><p class="muted" style="margin-top:8px">Só a equipe da prova entra aqui. No sistema real, cada pessoa tem login próprio e permissões (financeiro, documentos, balcão de kits).</p>'+
-    '<form data-form="olog" novalidate style="margin-top:28px;display:flex;flex-direction:column;gap:14px"><div class="f"><label for="oe">E-mail da equipe</label><input id="oe" type="email" value="organizacao@paranachip.com.br"></div><button class="btn btn-lg" type="submit">Entrar (simulação)</button></form></main>';
+    '<form data-form="olog" novalidate style="margin-top:28px;display:flex;flex-direction:column;gap:14px"><div class="f"><label for="oe">E-mail da equipe</label><input id="oe" type="email" value="'+esc(DB.admin.email)+'"></div><button class="btn btn-lg" type="submit">Entrar (simulação)</button></form></main>';
   const regs=DB.regs,paid=regs.filter(r=>PAIDS.includes(r.status));
   const nDoc=paid.filter(r=>r.doc==='analise').length,nDisp=regs.filter(r=>r.dispute&&r.dispute.status==='aberta').length;
   const tabs='<nav class="otabs" aria-label="Seções do painel">'+OTABS.map(([k,l])=>'<button data-oa="tab" data-v="'+k+'" aria-current="'+(ORG.tab===k)+'">'+l+(k==='documentos'&&nDoc?'<span class="cnt">'+nDoc+'</span>':'')+(k==='contestacoes'&&nDisp?'<span class="cnt">'+nDisp+'</span>':'')+'</button>').join('')+'</nav>';
-  const body={geral:oGeral,inscritos:oInscritos,documentos:oDocs,financeiro:oFin,contestacoes:oDisp,kits:oKits}[ORG.tab]();
+  const body={geral:oGeral,inscritos:oInscritos,documentos:oDocs,financeiro:oFin,contestacoes:oDisp,kits:oKits,conta:oConta}[ORG.tab]();
   return top+'<main class="wrap" style="padding-bottom:80px">'+tabs+body+'</main>'+(ORG.sel?oModal():'');
 }
 function fin(){
@@ -655,6 +655,80 @@ function oKits(){
   (q&&!s?(res.length?'<div class="todo" style="margin-top:20px;max-width:640px">'+res.map(r=>'<button data-oa="kit-sel" data-id="'+r.id+'"><span><span class="mono">'+r.bib+'</span> · '+esc(r.name)+'</span><span class="small muted">'+(r.kit?'entregue':modLabel(r.modality))+'</span></button>').join('')+'</div>':'<p class="small" style="margin-top:16px">Ninguém encontrado.</p>'):'')+sel+
   (done.length?'<p class="osec" style="margin-top:48px">Últimas entregas</p><div class="tbl"><table><thead><tr><th>Peito</th><th>Atleta</th><th>Camiseta</th><th>Horário</th></tr></thead><tbody>'+done.slice(0,10).map(r=>'<tr><td class="mono">'+r.bib+'</td><td>'+esc(r.name)+'</td><td>'+r.shirt+'</td><td class="mono small">'+fmtDT(r.kitAt)+'</td></tr>').join('')+'</tbody></table></div>':'');
 }
+/* ---- conta do admin ---- */
+const ROLES={admin:['Administrador','Tudo, inclusive equipe, recebimentos e configurações'],fin:['Financeiro','Financeiro, reembolsos e contestações'],docs:['Documentos','Inscritos e fila de documentos'],kits:['Balcão de kits','Só a entrega de kits']};
+function ensureAdmin(){
+  if(!DB.admin)DB.admin={name:'Administrador da prova',email:'organizacao@exemplo.com',phone:'',title:'Coordenação geral',role:'admin',twofa:false,lastLogin:SIM_TODAY-2*36e5};
+  if(!DB.orgInfo)DB.orgInfo={razao:'Paraná Chip e Eventos Esportivos',cnpj:'',email:'contato@exemplo.com',phone:'',city:'Foz do Iguaçu, PR',instagram:''};
+  if(!DB.pay)DB.pay={gateway:'mercadopago',connected:false,bank:'',agency:'',account:'',holder:''};
+  if(!DB.team)DB.team=[{id:'t1',name:DB.admin.name,email:DB.admin.email,role:'admin',me:true,status:'ativo'},{id:'t2',name:'Equipe financeira',email:'financeiro@exemplo.com',role:'fin',status:'ativo'},{id:'t3',name:'Voluntário do balcão',email:'balcao1@exemplo.com',role:'kits',status:'convite enviado'}];
+  if(!DB.cfg)DB.cfg={priceGeral:300,priceReduced:250,fee:20,limit:2500,maxInst:6,changeFee:80};
+  if(!DB.log)DB.log=[{at:SIM_TODAY-5*36e5,who:'Equipe financeira',txt:'Exportou a planilha de inscritos'},{at:SIM_TODAY-26*36e5,who:DB.admin.name,txt:'Aprovou 34 documentos'},{at:SIM_TODAY-3*DAY,who:DB.admin.name,txt:'Convidou Voluntário do balcão (Balcão de kits)'}];
+  save();
+}
+function applyCfg(){const c=DB.cfg;PRICE.geral=c.priceGeral;PRICE.reduzido=c.priceReduced;FEE=c.fee;LIMIT=c.limit;MAX_INST=c.maxInst;CHANGE_FEE=c.changeFee}
+function logA(txt){DB.log.unshift({at:simNow(),who:DB.admin.name,txt});DB.log=DB.log.slice(0,50);save()}
+const acc=(title,desc,body)=>'<section class="sec-h" style="padding-block:36px;border-top:1px solid var(--line)"><div><p class="osec" style="margin:0">'+title+'</p><p class="small muted" style="margin-top:8px;max-width:36ch">'+desc+'</p></div><div style="min-width:0">'+body+'</div></section>';
+const af=(form,k,label,val,type,attrs,cls)=>'<div class="f'+(cls?' '+cls:'')+'"><label for="'+form+'-'+k+'">'+label+'</label><input id="'+form+'-'+k+'" name="'+k+'" type="'+(type||'text')+'" value="'+esc(val)+'" '+(attrs||'')+'></div>';
+function oConta(){
+  const A=DB.admin,O=DB.orgInfo,P=DB.pay,C=DB.cfg;
+  const gwName={mercadopago:'Mercado Pago',stripe:'Stripe'};
+  const ini=A.name.split(/\s+/).filter(Boolean).slice(0,2).map(s=>s[0]).join('').toUpperCase();
+  return '<div class="oh"><div><p class="eyebrow">Último acesso: '+fmtDT(A.lastLogin)+'</p><h1 style="margin-top:8px">Conta e equipe</h1></div></div>'+
+  '<div class="row" style="gap:20px;margin-bottom:8px"><div style="width:64px;height:64px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center;font-family:var(--f-display);font-stretch:75%;font-weight:800;font-size:24px">'+esc(ini||'AD')+'</div>'+
+  '<div><p style="font-weight:600;font-size:20px">'+esc(A.name)+'</p><p class="small muted">'+esc(A.title)+' · '+ROLES[A.role][0]+' · '+esc(A.email)+'</p></div></div>'+
+
+  acc('Seus dados','Usados no login e na assinatura dos e-mails enviados pela equipe.',
+    '<form data-form="oprof" class="fields">'+af('p','name','Nome',A.name,'text','autocomplete="name"')+af('p','title','Cargo',A.title)+af('p','email','E-mail de login',A.email,'email','autocomplete="email"')+af('p','phone','Celular',A.phone,'tel','placeholder="+55 45 9…"')+
+    '<label class="chk full" style="margin-top:4px"><input type="checkbox" name="twofa"'+(A.twofa?' checked':'')+'><span>Verificação em duas etapas no login<br><span class="small muted">Recomendado para quem acessa financeiro e reembolsos.</span></span></label>'+
+    '<div class="full"><button class="btn btn-sm" type="submit">Salvar meus dados</button></div></form>')+
+
+  acc('Organização','Aparece no rodapé do site, no comprovante de inscrição e no checkout do gateway.',
+    '<form data-form="oorg" class="fields">'+af('o','razao','Razão social',O.razao,'text','','full')+af('o','cnpj','CNPJ',O.cnpj,'text','inputmode="numeric" placeholder="00.000.000/0000-00"')+af('o','city','Cidade',O.city)+
+    af('o','email','E-mail de atendimento',O.email,'email')+af('o','phone','WhatsApp de atendimento',O.phone,'tel','placeholder="+55 45 9…"')+af('o','instagram','Instagram',O.instagram,'text','placeholder="@meia3fronteiras"','full')+
+    '<div class="full"><button class="btn btn-sm" type="submit">Salvar organização</button></div></form>')+
+
+  acc('Recebimentos','Para onde vai o dinheiro das inscrições. A conta bancária é cadastrada dentro do gateway, não aqui.',
+    '<form data-form="opay" class="fields"><div class="f"><label for="g-gw">Gateway</label><select id="g-gw" name="gateway">'+Object.keys(gwName).map(k=>'<option value="'+k+'"'+(P.gateway===k?' selected':'')+'>'+gwName[k]+'</option>').join('')+'</select></div>'+
+    '<div class="f"><label>Status</label><p style="padding:12px 0">'+(P.connected?'<span class="badge b-ok">Conectado</span>':'<span class="badge b-warn">Não conectado</span>')+'</p></div>'+
+    '<div class="full row">'+(P.connected?'<button class="btn btn-ghost btn-sm" type="button" data-oa="gw-off">Desconectar</button>':'<button class="btn btn-sm" type="button" data-oa="gw-on">Conectar '+gwName[P.gateway]+' (simulação)</button>')+'<button class="btn btn-ghost btn-sm" type="submit">Salvar</button></div>'+
+    '<p class="small muted full">No sistema real, "Conectar" abre a tela do gateway para você autorizar a conta da empresa. Pix e cartão passam a cair direto na conta cadastrada lá, no prazo do gateway.</p></form>')+
+
+  acc('Equipe','Cada pessoa entra com o próprio e-mail e só vê o que a função permite.',
+    '<div class="tbl"><table><thead><tr><th>Pessoa</th><th>Função</th><th>Status</th><th></th></tr></thead><tbody>'+
+    DB.team.map(m=>'<tr><td><b style="font-weight:600">'+esc(m.name)+(m.me?' <span class="small muted">(você)</span>':'')+'</b><br><span class="small muted">'+esc(m.email)+'</span></td>'+
+      '<td>'+(m.me?ROLES[m.role][0]:'<select data-team-role="'+m.id+'" aria-label="Função de '+esc(m.name)+'" style="border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 10px">'+Object.keys(ROLES).map(k=>'<option value="'+k+'"'+(m.role===k?' selected':'')+'>'+ROLES[k][0]+'</option>').join('')+'</select>')+'</td>'+
+      '<td>'+(m.status==='ativo'?'<span class="badge b-ok">Ativo</span>':'<span class="badge b-warn">Convite enviado</span>')+'</td>'+
+      '<td class="r">'+(m.me?'':'<button class="link" style="color:var(--crit)" data-oa="team-rm" data-id="'+m.id+'">Remover</button>')+'</td></tr>').join('')+
+    '</tbody></table></div>'+
+    '<form data-form="oteam" class="row" style="align-items:flex-end;margin-top:20px"><div class="f" style="flex:2 1 220px"><label for="tm-email">Convidar por e-mail</label><input id="tm-email" name="email" type="email" placeholder="nome@exemplo.com"></div>'+
+    '<div class="f" style="flex:1 1 160px"><label for="tm-role">Função</label><select id="tm-role" name="role">'+Object.keys(ROLES).filter(k=>k!=='admin').map(k=>'<option value="'+k+'">'+ROLES[k][0]+'</option>').join('')+'<option value="admin">Administrador</option></select></div><button class="btn btn-sm" type="submit">Convidar</button></form>'+
+    '<div class="list" style="margin-top:24px">'+Object.keys(ROLES).map(k=>'<li style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px"><b style="font-weight:600">'+ROLES[k][0]+'</b><span class="muted" style="text-align:right">'+ROLES[k][1]+'</span></li>').join('')+'</div>')+
+
+  acc('Evento','Valores usados no site e nas novas inscrições. Inscrições já pagas não mudam.',
+    '<form data-form="ocfg" class="fields">'+af('c','priceGeral','Preço geral (R$)',C.priceGeral,'number','min="0" step="0.01"')+af('c','priceReduced','Preço 60+, PCD e cadeirante (R$)',C.priceReduced,'number','min="0" step="0.01"')+
+    af('c','fee','Taxa de serviço (R$)',C.fee,'number','min="0" step="0.01"')+af('c','limit','Limite técnico de atletas',C.limit,'number','min="1"')+af('c','maxInst','Máximo de parcelas',C.maxInst,'number','min="1" max="12"')+af('c','changeFee','Taxa de alteração (R$)',C.changeFee,'number','min="0" step="0.01"')+
+    '<div class="full"><button class="btn btn-sm" type="submit">Salvar configurações do evento</button></div></form>')+
+
+  acc('Atividade recente','O que a equipe fez no painel. Ajuda a saber quem aprovou, reembolsou ou mudou o quê.',
+    '<ul class="list">'+DB.log.slice(0,12).map(l=>'<li style="font-size:14px"><span><b style="font-weight:600">'+esc(l.who)+'</b> · '+esc(l.txt)+'</span><span class="mono small muted" style="white-space:nowrap">'+fmtDT(l.at)+'</span></li>').join('')+'</ul>');
+}
+document.addEventListener('submit',e=>{
+  const f=e.target.dataset.form;if(!f||f[0]!=='o'||f==='olog'||f==='okit')return;e.preventDefault();
+  const fd=new FormData(e.target),g=k=>String(fd.get(k)||'').trim();
+  if(f==='oprof'){if(!g('name')||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(g('email'))){toast('Preencha nome e um e-mail válido.');return}
+    Object.assign(DB.admin,{name:g('name'),title:g('title'),email:g('email'),phone:g('phone'),twofa:fd.get('twofa')==='on'});const me=DB.team.find(m=>m.me);if(me){me.name=DB.admin.name;me.email=DB.admin.email}logA('Atualizou os próprios dados');toast('Seus dados foram salvos.')}
+  if(f==='oorg'){Object.assign(DB.orgInfo,{razao:g('razao'),cnpj:g('cnpj'),city:g('city'),email:g('email'),phone:g('phone'),instagram:g('instagram')});logA('Atualizou os dados da organização');toast('Dados da organização salvos.')}
+  if(f==='opay'){DB.pay.gateway=g('gateway');save();toast('Gateway salvo.')}
+  if(f==='oteam'){const em=g('email');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){toast('Digite um e-mail válido.');return}if(DB.team.some(m=>m.email.toLowerCase()===em.toLowerCase())){toast('Essa pessoa já está na equipe.');return}
+    DB.team.push({id:'t'+Date.now(),name:em.split('@')[0],email:em,role:g('role'),status:'convite enviado'});logA('Convidou '+em+' ('+ROLES[g('role')][0]+')');toast('Convite enviado para '+em+'.')}
+  if(f==='ocfg'){const n=k=>parseFloat(fd.get(k));const c={priceGeral:n('priceGeral'),priceReduced:n('priceReduced'),fee:n('fee'),limit:parseInt(fd.get('limit'),10),maxInst:parseInt(fd.get('maxInst'),10),changeFee:n('changeFee')};
+    if(Object.values(c).some(v=>isNaN(v)||v<0)||c.limit<1||c.maxInst<1){toast('Confira os valores: nenhum pode ficar vazio ou negativo.');return}
+    DB.cfg=c;applyCfg();logA('Mudou as configurações do evento');toast('Configurações salvas. Já valem no site e nas novas inscrições.')}
+  save();render();
+});
+document.addEventListener('change',e=>{const id=e.target.dataset&&e.target.dataset.teamRole;if(!id)return;const m=DB.team.find(x=>x.id===id);m.role=e.target.value;logA('Mudou a função de '+m.name+' para '+ROLES[m.role][0]);toast('Função atualizada.');render()});
+
 function oModal(){
   const r=byId(ORG.sel);if(!r)return '';
   const kv=(l,v)=>'<dt>'+l+'</dt><dd>'+v+'</dd>';
@@ -679,20 +753,23 @@ document.addEventListener('click',e=>{
   case 'open':ORG.sel=id;ORG.confirm=false;render();break;
   case 'close':if(e.target===b||b.tagName==='BUTTON'){ORG.sel=null;render()}break;
   case 'page':ORG.page+=+b.dataset.v;orgTable();break;
-  case 'doc-ok':r.doc='aprovado';save();toast('Documento de '+r.name+' aprovado.');render();break;
-  case 'doc-no':{const s=document.getElementById('rr-'+id);r.doc='recusado';r.docReason=s?s.value:REASONS[0];save();toast('E-mail enviado para '+r.email+'. Prazo para reenviar: '+fmtD(SIM_TODAY+30*DAY)+'.');render();break}
+  case 'doc-ok':r.doc='aprovado';logA('Aprovou o documento de '+r.name);save();toast('Documento de '+r.name+' aprovado.');render();break;
+  case 'doc-no':{const s=document.getElementById('rr-'+id);r.doc='recusado';r.docReason=s?s.value:REASONS[0];logA('Recusou o documento de '+r.name+' ('+r.docReason+')');save();toast('E-mail enviado para '+r.email+'. Prazo para reenviar: '+fmtD(SIM_TODAY+30*DAY)+'.');render();break}
   case 'remind':toast('Lembrete enviado para '+r.email+'.');break;
   case 'resend':toast('Comprovante reenviado para '+r.email+'.');break;
   case 'refund':ORG.confirm=true;render();break;
   case 'refund-no':ORG.confirm=false;render();break;
-  case 'refund-ok':r.status='reembolsado';r.refundedAt=simNow();r.bib=null;save();ORG.sel=null;toast('Reembolso de '+money(r.total)+' pedido ao gateway. Vaga liberada.');render();break;
+  case 'refund-ok':logA('Reembolsou '+money(r.total)+' de '+r.name);r.status='reembolsado';r.refundedAt=simNow();r.bib=null;save();ORG.sel=null;toast('Reembolso de '+money(r.total)+' pedido ao gateway. Vaga liberada.');render();break;
   case 'goto-disp':ORG.sel=null;ORG.tab='contestacoes';ORG.disp=id;render();break;
   case 'disp-open':ORG.disp=id;render();break;
-  case 'disp-send':r.dispute.status='defesa enviada';save();ORG.disp=null;toast('Defesa enviada ao gateway. O banco costuma decidir em 30 a 75 dias.');render();break;
-  case 'disp-accept':r.dispute.status='perdida';r.status='estornado';r.bib=null;save();toast(money(r.total)+' devolvidos ao titular do cartão.');render();break;
+  case 'disp-send':logA('Enviou defesa da contestação de '+r.name);r.dispute.status='defesa enviada';save();ORG.disp=null;toast('Defesa enviada ao gateway. O banco costuma decidir em 30 a 75 dias.');render();break;
+  case 'disp-accept':logA('Aceitou a contestação de '+r.name);r.dispute.status='perdida';r.status='estornado';r.bib=null;save();toast(money(r.total)+' devolvidos ao titular do cartão.');render();break;
   case 'kit-sel':ORG.kitSel=id;render();break;
-  case 'kit-ok':{const c=document.getElementById('kdoc');if(!c||!c.checked){toast('Marque que você conferiu o documento.');break}r.kit=true;r.kitAt=simNow();save();toast('Kit do peito '+r.bib+' entregue.');ORG.kitQ='';ORG.kitSel=null;render();const i=document.getElementById('kq');if(i)i.focus();break}
-  case 'csv':{const q=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';
+  case 'gw-on':DB.pay.connected=true;logA('Conectou o gateway');save();toast('Gateway conectado (simulação).');render();break;
+  case 'gw-off':DB.pay.connected=false;logA('Desconectou o gateway');save();toast('Gateway desconectado. O site não aceita pagamentos até reconectar.');render();break;
+  case 'team-rm':{const i=DB.team.findIndex(m=>m.id===id);if(i>=0){logA('Removeu '+DB.team[i].email+' da equipe');DB.team.splice(i,1);save();toast('Acesso removido.');render()}break}
+  case 'kit-ok':{const c=document.getElementById('kdoc');if(!c||!c.checked){toast('Marque que você conferiu o documento.');break}r.kit=true;r.kitAt=simNow();logA('Entregou o kit do peito '+r.bib);save();toast('Kit do peito '+r.bib+' entregue.');ORG.kitQ='';ORG.kitSel=null;render();const i=document.getElementById('kq');if(i)i.focus();break}
+  case 'csv':{logA('Exportou a planilha de inscritos');const q=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';
     const csv=[['protocolo','peito','nome','percurso','categoria','pais','documento','cpf_ou_doc','email','celular','camiseta','pagamento','forma','parcelas','total','documento_status','inscrito_em'].join(',')].concat(oFiltered().map(r=>[r.protocol,r.bib,r.name,modLabel(r.modality),catLabel(r.cat),flagTxt[r.country],r.docType,r.cpf||r.docNum,r.email,r.phone,r.shirt,stTxt[r.status][0],r.method,r.inst,r.total.toFixed(2),docTxt[r.doc][0],fmtDT(r.created)].map(q).join(','))).join('\n');
     try{navigator.clipboard.writeText(csv).then(()=>toast('Planilha copiada. Cole no Excel ou Google Sheets.'),()=>toast('Não deu para copiar neste navegador.'))}catch(x){toast('Não deu para copiar neste navegador.')}break}
   }
@@ -765,7 +842,7 @@ document.addEventListener('submit',e=>{
     else{S.login.err='';S.login.sent=true}render()}
 });
 
-ensureSeed();
+ensureSeed();ensureAdmin();applyCfg();
 render();
 })();
 </script>

@@ -10,7 +10,7 @@ Protótipo navegável em [`prototipo/index.html`](prototipo/index.html). É um a
 - **Inscrição:** percurso, categoria, dados do atleta (CPF para brasileiros, documento do país para estrangeiros), envio de documento e aceite dos termos.
 - **Checkout do gateway:** tela simulada. No sistema real ela é do Mercado Pago (Checkout Pro) ou da Stripe.
 - **Área do atleta:** número de peito, QR code para retirada do kit, status do documento e do pagamento, cancelamento em até 7 dias.
-- **Painel da organização** (link "Organização" no rodapé): visão geral, inscritos, documentos, financeiro, contestações (chargeback) e entrega de kits.
+- **Painel da organização** (link "Organização" no rodapé): visão geral, inscritos, documentos, financeiro, contestações (chargeback), entrega de kits e conta do administrador (dados pessoais, organização, gateway, equipe com permissões, configurações do evento e registro de atividade).
 
 Os dados são de exemplo, baseados na edição 2026, e ficam só no navegador (localStorage). Nenhum pagamento é real.
 
