@@ -88,6 +88,13 @@ p{margin:0}
 .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
 .cols>*{background:var(--bg);padding:28px;min-width:0}
 @media (max-width:640px){.cols{grid-template-columns:1fr}}
+.cols3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:820px){.cols3{grid-template-columns:1fr}}
+.kitc{display:flex;flex-direction:column}
+.kitc .btn{align-self:flex-start}
+.kit-items{list-style:none;padding:0;margin:20px 0 24px;display:flex;flex-direction:column;gap:8px;font-size:15px;flex:1}
+.kit-items li{display:flex;gap:10px}
+.kit-items li::before{content:"—";color:var(--muted)}
 .price{font-family:var(--f-display);font-stretch:75%;font-weight:700;font-size:44px;line-height:1;margin:14px 0 6px}
 .km{font-family:var(--f-display);font-stretch:68%;font-weight:800;font-size:72px;line-height:.9}
 .km small{font-size:28px}
@@ -232,6 +239,8 @@ const DAY=864e5;
 const SIM_TODAY=new Date('2026-08-20T10:00:00-03:00').getTime(),LOAD=Date.now(),simNow=()=>SIM_TODAY+(Date.now()-LOAD);
 const EVENT=new Date('2026-10-11T06:30:00-03:00');
 const PRICE={geral:300,reduzido:250},INST_RATE=.0199;let FEE=20,MAX_INST=6,CHANGE_FEE=80;
+const KITS={basico:{name:'Básico',add:0,items:['Número de peito com chip','Camiseta oficial','Medalha de finisher']},intermediario:{name:'Intermediário',add:90,items:['Tudo do kit Básico','Camiseta finisher','Sacochila']},premium:{name:'Premium',add:240,items:['Tudo do kit Intermediário','Corta-vento','Boné','Retirada de kit sem fila','Transporte da chegada (AR) de volta a Foz do Iguaçu']}};
+const KIT_ORDER=['basico','intermediario','premium'],tierName=r=>KITS[r.tier||'basico'].name;
 const KEY='tf-v4';
 const DOCS={BR:['RG','CNH','Passaporte'],PY:['Cédula de identidad','Pasaporte'],AR:['DNI','Pasaporte'],XX:['Passaporte']};
 const COUNTRIES=[['BR','Brasil'],['PY','Paraguai'],['AR','Argentina'],['XX','Outro país']];
@@ -254,7 +263,7 @@ function toast(m){const el=document.getElementById('toast');el.textContent=m;el.
 const modLabel=m=>m==='21'?'21 km':'10,5 km';
 const catLabel=c=>({geral:'Geral','60':'60+',pcd:'PCD',cad:'Cadeirante'})[c];
 const priceOf=c=>c==='geral'?PRICE.geral:PRICE.reduzido;
-function totals(r,inst){const sub=r.base+r.fee,interest=inst>1?Math.round(sub*INST_RATE*(inst-1)*100)/100:0;return{sub,interest,total:sub+interest}}
+function totals(r,inst){const sub=r.base+(r.kitAdd||0)+r.fee,interest=inst>1?Math.round(sub*INST_RATE*(inst-1)*100)/100:0;return{sub,interest,total:sub+interest}}
 const byId=id=>DB.regs.find(r=>r.id===id);
 
 /* routing */
@@ -280,7 +289,7 @@ function render(){
 function header(){
   return '<header class="top"><div class="wrap">'+
   '<button class="logo" data-go="inicio">3 Fronteiras</button>'+
-  '<nav class="links" aria-label="Seções">'+[['inscricoes','Inscrições'],['prova','A prova'],['kit','Kit'],['regulamento','Regulamento'],['faq','Dúvidas']].map(([id,l])=>'<button data-scroll="'+id+'">'+l+'</button>').join('')+'</nav>'+
+  '<nav class="links" aria-label="Seções">'+[['inscricoes','Inscrições'],['prova','A prova'],['kits','Kits'],['regulamento','Regulamento'],['faq','Dúvidas']].map(([id,l])=>'<button data-scroll="'+id+'">'+l+'</button>').join('')+'</nav>'+
   '<div class="top-r"><button class="btn btn-ghost btn-sm hide-xs" data-go="portal">Área do atleta</button><button class="btn btn-sm" data-go="inscricao">Inscreva-se</button></div>'+
   '</div></header>';
 }
@@ -298,11 +307,11 @@ function pageLanding(){
 
   '<section class="sec" id="inscricoes"><div class="wrap sec-h"><div><p class="eyebrow">Inscrições abertas até 24/09</p><h2 style="margin-top:12px">Garanta sua vaga</h2></div>'+
   '<div><div class="cols">'+
-    '<div><p class="eyebrow">Inscrição geral</p><p class="price">'+money(PRICE.geral)+'</p><p class="muted small">+ '+money(FEE)+' de taxa de serviço</p><p style="margin-top:16px">Para quem vai correr os 21 km ou os 10,5 km.</p><button class="btn btn-sm" style="margin-top:22px" data-go="inscricao" data-cat="geral">Inscrever</button></div>'+
+    '<div><p class="eyebrow">Inscrição geral</p><p class="price">'+money(PRICE.geral)+'</p><p class="muted small">+ '+money(FEE)+' de taxa de serviço</p><p style="margin-top:16px">Com o kit Básico. Kits Intermediário e Premium logo abaixo.</p><button class="btn btn-sm" style="margin-top:22px" data-go="inscricao" data-cat="geral">Inscrever</button></div>'+
     '<div><p class="eyebrow">60+, PCD e cadeirantes</p><p class="price">'+money(PRICE.reduzido)+'</p><p class="muted small">+ '+money(FEE)+' de taxa de serviço</p><p style="margin-top:16px">PCD envia laudo médico válido na inscrição.</p><button class="btn btn-sm btn-ghost" style="margin-top:22px" data-go="inscricao" data-cat="60">Inscrever</button></div>'+
   '</div><p class="muted small" style="margin-top:16px">Pix ou cartão de crédito, nacional ou internacional, em até '+MAX_INST+'x. As inscrições fecham antes se o limite técnico de atletas for atingido.</p></div></div></section>'+
 
-  '<section class="sec" id="prova"><div class="wrap sec-h"><div><p class="eyebrow">Domingo, 11 de outubro</p><h2 style="margin-top:12px">A prova</h2><p class="muted" style="margin-top:16px;max-width:34ch">Larga no Paraguai, cruza o Brasil e termina na Argentina, no Marco das Três Fronteiras.</p></div>'+
+  kitsSection()+'<section class="sec" id="prova"><div class="wrap sec-h"><div><p class="eyebrow">Domingo, 11 de outubro</p><h2 style="margin-top:12px">A prova</h2><p class="muted" style="margin-top:16px;max-width:34ch">Larga no Paraguai, cruza o Brasil e termina na Argentina, no Marco das Três Fronteiras.</p></div>'+
   '<div class="cols">'+
     '<div><div class="km">21<small> km</small></div><dl class="dl"><dt>Largada</dt><dd>06h30, Municipalidad de Ciudad del Este (PY)</dd><dt>Chegada</dt><dd>Marco das Três Fronteiras, Puerto Iguazú (AR)</dd></dl></div>'+
     '<div><div class="km">10,5<small> km</small></div><dl class="dl"><dt>Largada</dt><dd>06h30, Secretaria Municipal de Turismo, Av. das Cataratas, 2330, Foz do Iguaçu (BR)</dd><dt>Chegada</dt><dd>Marco das Três Fronteiras, Puerto Iguazú (AR)</dd></dl></div>'+
@@ -325,13 +334,18 @@ function pageLanding(){
   '</div></div></section>'+
   '<footer><div class="wrap"><span>Realização: Paraná Chip e Eventos Esportivos</span><span class="row" style="gap:20px"><button class="link" data-go="portal">Área do atleta</button><button class="link" data-go="organizador">Organização</button></span></div></footer>';
 }
+function kitsSection(){
+  return '<section class="sec" id="kits"><div class="wrap"><div class="sec-h" style="margin-bottom:32px"><div><p class="eyebrow">Escolha na inscrição</p><h2 style="margin-top:12px">Kits</h2></div><p class="muted" style="max-width:52ch;align-self:end">Todo kit tem número de peito com chip de cronometragem. O preço é o da inscrição geral já com o kit; para 60+, PCD e cadeirantes, o valor da inscrição é menor.</p></div>'+
+  '<div class="cols cols3">'+KIT_ORDER.map(k=>{const K=KITS[k];return '<div class="kitc"><p class="eyebrow">Kit '+K.name+(k==='premium'?' · o mais completo':'')+'</p><p class="price">'+money(PRICE.geral+K.add)+'</p><p class="muted small">60+, PCD e cadeirantes: '+money(PRICE.reduzido+K.add)+'</p><ul class="kit-items">'+K.items.map(i=>'<li>'+esc(i)+'</li>').join('')+'</ul><button class="btn btn-sm'+(k==='premium'?'':' btn-ghost')+'" data-go="inscricao" data-tier="'+k+'">Quero o kit '+K.name+'</button></div>'}).join('')+'</div>'+
+  '<p class="small muted" style="margin-top:14px">Imagens e itens meramente ilustrativos. + '+money(FEE)+' de taxa de serviço por inscrição. Os kits são retirados juntos, antes da prova.</p></div></section>';
+}
 const faq=(q,a)=>'<details><summary>'+esc(q)+'</summary><p>'+esc(a)+'</p></details>';
 
 /* ============ INSCRIÇÃO ============ */
 function flowHeader(label){
   return '<header class="top"><div class="wrap"><button class="logo" data-go="inicio">3 Fronteiras</button><span class="muted small" style="margin-left:auto">'+label+'</span></div></header>';
 }
-function newDraft(cat){return{modality:'21',cat:cat||'geral',country:'BR',name:'',birth:'',sex:'',cpf:'',docType:'RG',docNum:'',email:'',phone:'',shirt:'',emergency:'',docFile:'',laudoFile:'',t1:false,t2:false}}
+function newDraft(cat){return{modality:'21',cat:cat||'geral',tier:'basico',country:'BR',name:'',birth:'',sex:'',cpf:'',docType:'RG',docNum:'',email:'',phone:'',shirt:'',emergency:'',docFile:'',laudoFile:'',t1:false,t2:false}}
 const D=()=>S.draft||(S.draft=newDraft());
 function field(k,label,input,cls){const e=S.errors[k];return '<div class="f'+(e?' bad':'')+(cls?' '+cls:'')+'"><label for="i-'+k+'">'+label+'</label>'+input+(e?'<span class="err">'+esc(e)+'</span>':'')+'</div>'}
 const inp=(k,type,attrs)=>'<input id="i-'+k+'" data-f="'+k+'" type="'+(type||'text')+'" value="'+esc(D()[k])+'" '+(attrs||'')+'>';
@@ -347,7 +361,8 @@ function pageForm(){
   '<form data-form="reg" novalidate style="margin-top:32px">'+
   '<div class="block"><h2><span class="mono">01</span>Percurso</h2><div class="seg">'+radio('modality','21','21 km','Largada em Ciudad del Este')+radio('modality','10','10,5 km','Largada em Foz do Iguaçu')+'</div></div>'+
   '<div class="block"><h2><span class="mono">02</span>Categoria</h2><div class="seg">'+radio('cat','geral','Geral',money(PRICE.geral))+radio('cat','60','60+',money(PRICE.reduzido))+radio('cat','pcd','PCD',money(PRICE.reduzido)+' · com laudo')+radio('cat','cad','Cadeirante',money(PRICE.reduzido))+'</div>'+(S.errors.cat?'<span class="small" style="color:var(--crit)">'+esc(S.errors.cat)+'</span>':'')+'</div>'+
-  '<div class="block"><div class="row between"><h2><span class="mono">03</span>Seus dados</h2><button type="button" class="link" data-act="fill">Preencher exemplo</button></div><div class="fields">'+
+  '<div class="block"><h2><span class="mono">03</span>Kit</h2><div class="seg">'+KIT_ORDER.map(k=>radio('tier',k,KITS[k].name,KITS[k].add?'+ '+money(KITS[k].add):'incluso')).join('')+'</div><p class="small muted">'+esc(KITS[d.tier].items.join(' · '))+'</p></div>'+
+  '<div class="block"><div class="row between"><h2><span class="mono">04</span>Seus dados</h2><button type="button" class="link" data-act="fill">Preencher exemplo</button></div><div class="fields">'+
     field('country','Nacionalidade',sel('country',COUNTRIES))+
     field('name','Nome completo',inp('name','text','autocomplete="name"'))+
     field('birth','Data de nascimento',inp('birth','date'))+
@@ -362,11 +377,11 @@ function pageForm(){
     field('docFile','Foto do documento',file('docFile'),d.cat==='pcd'?'':'full')+
     (d.cat==='pcd'?field('laudoFile','Laudo médico',file('laudoFile')):'')+
   '</div></div>'+
-  '<div class="block"><h2><span class="mono">04</span>Termos</h2>'+
+  '<div class="block"><h2><span class="mono">05</span>Termos</h2>'+
     '<label class="chk"><input type="checkbox" data-f="t1"'+(d.t1?' checked':'')+'><span>Li e aceito o regulamento e o termo de responsabilidade.'+(S.errors.t1?'<span class="err">'+esc(S.errors.t1)+'</span>':'')+'</span></label>'+
     '<label class="chk"><input type="checkbox" data-f="t2"'+(d.t2?' checked':'')+'><span>Autorizo o uso dos meus dados para a organização da prova (LGPD).'+(S.errors.t2?'<span class="err">'+esc(S.errors.t2)+'</span>':'')+'</span></label>'+
   '</div>'+
-  '<div class="total"><div><p class="small muted">'+modLabel(d.modality)+' · '+catLabel(d.cat)+'</p><p class="small muted">'+money(base)+' + '+money(FEE)+' de taxa de serviço</p></div><b>'+money(base+FEE)+'</b></div>'+
+  '<div class="total"><div><p class="small muted">'+modLabel(d.modality)+' · '+catLabel(d.cat)+' · kit '+KITS[d.tier].name+'</p><p class="small muted">'+money(base)+(KITS[d.tier].add?' + '+money(KITS[d.tier].add)+' do kit':'')+' + '+money(FEE)+' de taxa de serviço</p></div><b>'+money(base+KITS[d.tier].add+FEE)+'</b></div>'+
   '<button class="btn btn-lg btn-block" type="submit">Continuar para o pagamento</button>'+
   '<p class="muted small" style="margin-top:12px;text-align:center">Você vai para o ambiente seguro do gateway de pagamento.</p>'+
   '</form></main>';
@@ -433,7 +448,7 @@ function pageCheckout(){
   (br?'':'<p class="small muted" style="margin:-8px 0 16px">Pix só funciona com conta em banco brasileiro. Cartões internacionais são aceitos.</p>')+
   body+'</div>'+
   '<aside class="card"><p class="eyebrow">Paraná Chip e Eventos Esportivos</p><p style="font-weight:600;margin:8px 0 16px">Meia Maratona Internacional das 3 Fronteiras</p><div class="sum">'+
-  '<div><span>'+modLabel(r.modality)+' · '+catLabel(r.cat)+'</span><span>'+money(r.base)+'</span></div><div><span>Taxa de serviço</span><span>'+money(r.fee)+'</span></div>'+
+  '<div><span>'+modLabel(r.modality)+' · '+catLabel(r.cat)+'</span><span>'+money(r.base)+'</span></div><div><span>Kit '+tierName(r)+'</span><span>'+(r.kitAdd?money(r.kitAdd):'incluso')+'</span></div><div><span>Taxa de serviço</span><span>'+money(r.fee)+'</span></div>'+
   (t.interest?'<div><span>Juros ('+S.inst+'x)</span><span>'+money(t.interest)+'</span></div>':'')+
   '<div class="t"><span>Total</span><span>'+money(t.total)+'</span></div></div>'+
   '<p class="small muted" style="margin-top:16px">'+esc(r.name)+'<br>'+esc(r.email)+'</p>'+
@@ -471,7 +486,7 @@ function regCard(r){
   const st=paid?'<span class="badge b-ok">Confirmada</span>':'<span class="badge b-muted">Cancelada · reembolsada</span>';
   const doc={analise:'<span class="badge b-warn">Em análise</span>',aprovado:'<span class="badge b-ok">Aprovado</span>'}[r.doc]||'';
   let h='<section style="margin-top:32px"><div class="row between" style="margin-bottom:16px">'+st+'<span class="mono small muted">'+esc(r.protocol)+'</span></div>';
-  if(paid)h+='<div class="bib"><div class="qr">'+qr(r.protocol)+'</div><div style="min-width:0"><p class="eyebrow">Número de peito</p><p class="n">'+r.bib+'</p><p style="margin-top:8px;font-weight:600">'+esc(r.name)+'</p><p class="small muted">'+modLabel(r.modality)+' · '+catLabel(r.cat)+' · camiseta '+esc(r.shirt)+'</p><p class="small" style="margin-top:12px">Mostre este QR code e um documento com foto na retirada do kit.</p></div></div>';
+  if(paid)h+='<div class="bib"><div class="qr">'+qr(r.protocol)+'</div><div style="min-width:0"><p class="eyebrow">Número de peito</p><p class="n">'+r.bib+'</p><p style="margin-top:8px;font-weight:600">'+esc(r.name)+'</p><p class="small muted">'+modLabel(r.modality)+' · '+catLabel(r.cat)+' · kit '+tierName(r)+' · camiseta '+esc(r.shirt)+'</p><p class="small" style="margin-top:12px">Mostre este QR code e um documento com foto na retirada do kit.</p></div></div>';
   h+='<dl class="kv" style="margin-top:24px">'+
     '<dt>Prova</dt><dd>11/10/2026 · largada 06h30 · '+(r.modality==='21'?'Ciudad del Este (PY)':'Foz do Iguaçu (BR)')+'</dd>'+
     (paid?'<dt>Documento</dt><dd>'+esc(r.docType)+' · '+esc(r.docFile)+' '+doc+'</dd>':'')+
@@ -508,12 +523,12 @@ function seedDemo(){
     const created=Math.round(rnd()<.12?start+rnd()*2*DAY:start+(SIM_TODAY-start)*Math.pow(rnd(),.7));
     const y=rnd(),cat=y<.09?'60':y<.11?'pcd':y<.115?'cad':'geral';
     const method=country==='BR'&&rnd()<.6?'pix':'card',inst=method==='card'&&rnd()<.4?2+Math.floor(rnd()*5):1;
-    const base=priceOf(cat),sub=base+FEE,interest=inst>1?Math.round(sub*INST_RATE*(inst-1)*100)/100:0;
+    const kz=rnd(),tier=kz<.55?'basico':kz<.85?'intermediario':'premium',kitAdd=KITS[tier].add,base=priceOf(cat),sub=base+kitAdd+FEE,interest=inst>1?Math.round(sub*INST_RATE*(inst-1)*100)/100:0;
     const status=rnd()<.95?'pago':'reembolsado',recent=SIM_TODAY-created<12*DAY;
     const doc=status!=='pago'?'aprovado':recent&&rnd()<.6?'analise':rnd()<.03?'recusado':'aprovado';
     out.push({id:'d'+i,demo:true,name:first+' '+last,email:norm(first)+'.'+norm(last).replace(/[^a-z]/g,'')+i+'@exemplo.com',phone:P.c+String(Math.floor(rnd()*1e8)).padStart(8,'0'),
       country,cpf:country==='BR'?genCPF(rnd):'',docType:DOCS[country][0],docNum:country==='BR'?'':String(1e6+Math.floor(rnd()*8e6)),docFile:norm(DOCS[country][0]).replace(/[^a-z]+/g,'_')+'_'+(i+1)+'.jpg',
-      doc,docReason:doc==='recusado'?pick(['Documento ilegível','RG com mais de 10 anos']):'',modality:rnd()<.58?'21':'10',cat,laudoFile:cat==='pcd'?'laudo.pdf':'',
+      doc,docReason:doc==='recusado'?pick(['Documento ilegível','RG com mais de 10 anos']):'',modality:rnd()<.58?'21':'10',cat,tier,kitAdd,laudoFile:cat==='pcd'?'laudo.pdf':'',
       shirt:pick(['PP','P','P','M','M','M','G','G','GG','XGG']),emergency:pick(P.f)+' '+last+' · '+P.c+'…',base,fee:FEE,interest,total:sub+interest,status,method,inst,
       created,paidAt:created+3e5,refundedAt:status==='reembolsado'?created+3*DAY:null,bib:null,kit:false,kitAt:null,dispute:null,
       ip:(country==='BR'?'177.':country==='PY'?'181.':'186.')+Math.floor(rnd()*255)+'.'+Math.floor(rnd()*255)+'.'+Math.floor(rnd()*255)});
@@ -527,11 +542,11 @@ function seedDemo(){
   return out;
 }
 function ensureSeed(){
-  if(DB.seeded)return;
-  const mine=DB.regs;DB.regs=seedDemo();
+  if(DB.seedV===2)return;
+  const mine=DB.regs.filter(r=>!r.demo);DB.regs=seedDemo();
   mine.forEach(r=>{r.protocol='3F26-'+String(DB.regs.length+1).padStart(6,'0');if(r.status==='pago'){const xs=DB.regs.filter(x=>x.modality===r.modality&&x.bib).map(x=>x.bib);r.bib=Math.max.apply(null,xs)+1}
     r.ip=r.ip||'177.84.12.201';r.kit=!!r.kit;r.dispute=r.dispute||null;DB.regs.push(r)});
-  DB.seeded=true;save();
+  DB.seedV=2;DB.seeded=true;save();
 }
 
 function pageOrg(){
@@ -574,7 +589,7 @@ function oGeral(){
   '<div><h3>Inscrições por semana</h3><div class="bars" role="img" aria-label="Inscrições por semana desde 04/05">'+w.map((v,i)=>'<i'+(i===weeks-1?' class="part"':'')+' style="height:'+(v/mx*100).toFixed(1)+'%" title="'+v+' inscrições"></i>').join('')+'</div><div class="bars-x"><span>04/05</span><span>pico: '+mx+'/semana</span><span>esta semana</span></div></div></div>'+
   '<div class="ogrid"><div><h3>Percurso</h3>'+split([['21 km',cnt('modality','21')],['10,5 km',cnt('modality','10')]])+'</div>'+
   '<div><h3>País</h3>'+split([['Brasil',cnt('country','BR')],['Paraguai',cnt('country','PY')],['Argentina',cnt('country','AR')],['Outros',cnt('country','XX')]])+'</div>'+
-  '<div><h3>Camisetas (pedido ao fornecedor)</h3>'+split(['PP','P','M','G','GG','XGG'].map(s=>[s,cnt('shirt',s)]))+'</div></div>';
+  '<div><h3>Camisetas (pedido ao fornecedor)</h3>'+split(['PP','P','M','G','GG','XGG'].map(s=>[s,cnt('shirt',s)]))+'</div><div><h3>Kits vendidos</h3>'+split(KIT_ORDER.map(k=>[KITS[k].name,paid.filter(r=>(r.tier||'basico')===k).length]))+'<p class="small muted" style="margin-top:12px">Receita de kits: '+money(paid.reduce((s,r)=>s+(r.kitAdd||0),0))+'</p></div></div>';
 }
 function oInscritos(){
   const o=(v,l,c)=>'<option value="'+v+'"'+(c===v?' selected':'')+'>'+l+'</option>';
@@ -593,7 +608,7 @@ function orgTable(){
   const el=document.getElementById('otable');if(!el)return;
   const rows=oFiltered(),per=30,pages=Math.max(1,Math.ceil(rows.length/per));if(ORG.page>=pages)ORG.page=pages-1;
   el.innerHTML='<div class="tbl"><table><thead><tr><th>Peito</th><th>Atleta</th><th>Percurso</th><th>País</th><th>Pagamento</th><th>Documento</th><th class="r">Total</th></tr></thead><tbody>'+
-  (rows.length?rows.slice(ORG.page*per,ORG.page*per+per).map(r=>'<tr class="click" data-oa="open" data-id="'+r.id+'" tabindex="0"><td class="mono"><b>'+(r.bib||'—')+'</b></td><td><b style="font-weight:600">'+esc(r.name)+'</b><br><span class="small muted">'+esc(r.protocol)+' · '+fmtD(r.created)+'</span></td><td>'+modLabel(r.modality)+'<br><span class="small muted">'+catLabel(r.cat)+'</span></td><td>'+flagTxt[r.country]+'</td><td>'+badge(stTxt,r.status)+'<br><span class="small muted">'+(r.method?(r.method==='pix'?'Pix':'Cartão '+r.inst+'x'):'—')+'</span></td><td>'+(PAIDS.includes(r.status)?badge(docTxt,r.doc):'<span class="muted">—</span>')+'</td><td class="r mono">'+money(r.total)+'</td></tr>').join('')
+  (rows.length?rows.slice(ORG.page*per,ORG.page*per+per).map(r=>'<tr class="click" data-oa="open" data-id="'+r.id+'" tabindex="0"><td class="mono"><b>'+(r.bib||'—')+'</b></td><td><b style="font-weight:600">'+esc(r.name)+'</b><br><span class="small muted">'+esc(r.protocol)+' · '+fmtD(r.created)+'</span></td><td>'+modLabel(r.modality)+'<br><span class="small muted">'+catLabel(r.cat)+' · kit '+tierName(r)+'</span></td><td>'+flagTxt[r.country]+'</td><td>'+badge(stTxt,r.status)+'<br><span class="small muted">'+(r.method?(r.method==='pix'?'Pix':'Cartão '+r.inst+'x'):'—')+'</span></td><td>'+(PAIDS.includes(r.status)?badge(docTxt,r.doc):'<span class="muted">—</span>')+'</td><td class="r mono">'+money(r.total)+'</td></tr>').join('')
   :'<tr><td colspan="7" class="muted" style="padding:32px 0;text-align:center">Ninguém com esses filtros.</td></tr>')+
   '</tbody></table></div><div class="pager"><span>'+rows.length+' resultados · página '+(ORG.page+1)+' de '+pages+'</span><div class="row"><button class="btn btn-ghost btn-sm" data-oa="page" data-v="-1"'+(ORG.page?'':' disabled')+'>Anterior</button><button class="btn btn-ghost btn-sm" data-oa="page" data-v="1"'+(ORG.page<pages-1?'':' disabled')+'>Próxima</button></div></div>';
 }
@@ -645,7 +660,7 @@ function oKits(){
   const res=q?paid.filter(r=>String(r.bib)===q||norm(r.protocol)===q||norm(r.name).includes(q)||(qd.length>=6&&r.cpf.replace(/\D/g,'')===qd)).slice(0,6):[];
   const s=ORG.kitSel?byId(ORG.kitSel):null;
   let sel='';
-  if(s)sel='<div class="bib" style="margin-top:28px"><p class="n">'+s.bib+'</p><div style="min-width:0"><p style="font-weight:600;font-size:20px">'+esc(s.name)+'</p><p class="small muted" style="margin-top:4px">'+modLabel(s.modality)+' · camiseta <b style="color:var(--fg)">'+esc(s.shirt)+'</b> · '+flagTxt[s.country]+' · '+esc(s.docType)+' '+esc(s.cpf||s.docNum)+'</p>'+
+  if(s)sel='<div class="bib" style="margin-top:28px"><p class="n">'+s.bib+'</p><div style="min-width:0"><p style="font-weight:600;font-size:20px">'+esc(s.name)+'</p><p class="small muted" style="margin-top:4px">'+modLabel(s.modality)+' · <b style="color:var(--fg)">kit '+tierName(s)+'</b> · camiseta <b style="color:var(--fg)">'+esc(s.shirt)+'</b> · '+flagTxt[s.country]+' · '+esc(s.docType)+' '+esc(s.cpf||s.docNum)+'</p>'+
     (s.doc!=='aprovado'?'<p class="small" style="color:var(--warn);margin-top:10px">Documento '+docTxt[s.doc][0].toLowerCase()+'. Confira o original com atenção.</p>':'')+
     (s.status==='contestado'?'<p class="small" style="color:var(--crit);margin-top:6px">Pagamento em contestação. Fale com a coordenação antes de entregar.</p>':'')+
     (s.kit?'<p class="small" style="color:var(--ok);margin-top:12px">Kit já entregue em '+fmtDT(s.kitAt)+'.</p>':'<label class="chk" style="margin-top:16px"><input type="checkbox" id="kdoc"><span>Conferi o documento com foto.</span></label><button class="btn" style="margin-top:14px" data-oa="kit-ok" data-id="'+s.id+'">Confirmar entrega</button>')+'</div></div>';
@@ -663,10 +678,11 @@ function ensureAdmin(){
   if(!DB.pay)DB.pay={gateway:'mercadopago',connected:false,bank:'',agency:'',account:'',holder:''};
   if(!DB.team)DB.team=[{id:'t1',name:DB.admin.name,email:DB.admin.email,role:'admin',me:true,status:'ativo'},{id:'t2',name:'Equipe financeira',email:'financeiro@exemplo.com',role:'fin',status:'ativo'},{id:'t3',name:'Voluntário do balcão',email:'balcao1@exemplo.com',role:'kits',status:'convite enviado'}];
   if(!DB.cfg)DB.cfg={priceGeral:300,priceReduced:250,fee:20,limit:2500,maxInst:6,changeFee:80};
+  if(DB.cfg.kitInter==null){DB.cfg.kitInter=90;DB.cfg.kitPremium=240}
   if(!DB.log)DB.log=[{at:SIM_TODAY-5*36e5,who:'Equipe financeira',txt:'Exportou a planilha de inscritos'},{at:SIM_TODAY-26*36e5,who:DB.admin.name,txt:'Aprovou 34 documentos'},{at:SIM_TODAY-3*DAY,who:DB.admin.name,txt:'Convidou Voluntário do balcão (Balcão de kits)'}];
   save();
 }
-function applyCfg(){const c=DB.cfg;PRICE.geral=c.priceGeral;PRICE.reduzido=c.priceReduced;FEE=c.fee;LIMIT=c.limit;MAX_INST=c.maxInst;CHANGE_FEE=c.changeFee}
+function applyCfg(){const c=DB.cfg;PRICE.geral=c.priceGeral;PRICE.reduzido=c.priceReduced;FEE=c.fee;LIMIT=c.limit;MAX_INST=c.maxInst;CHANGE_FEE=c.changeFee;KITS.intermediario.add=c.kitInter;KITS.premium.add=c.kitPremium}
 function logA(txt){DB.log.unshift({at:simNow(),who:DB.admin.name,txt});DB.log=DB.log.slice(0,50);save()}
 const acc=(title,desc,body)=>'<section class="sec-h" style="padding-block:36px;border-top:1px solid var(--line)"><div><p class="osec" style="margin:0">'+title+'</p><p class="small muted" style="margin-top:8px;max-width:36ch">'+desc+'</p></div><div style="min-width:0">'+body+'</div></section>';
 const af=(form,k,label,val,type,attrs,cls)=>'<div class="f'+(cls?' '+cls:'')+'"><label for="'+form+'-'+k+'">'+label+'</label><input id="'+form+'-'+k+'" name="'+k+'" type="'+(type||'text')+'" value="'+esc(val)+'" '+(attrs||'')+'></div>';
@@ -708,6 +724,7 @@ function oConta(){
   acc('Evento','Valores usados no site e nas novas inscrições. Inscrições já pagas não mudam.',
     '<form data-form="ocfg" class="fields">'+af('c','priceGeral','Preço geral (R$)',C.priceGeral,'number','min="0" step="0.01"')+af('c','priceReduced','Preço 60+, PCD e cadeirante (R$)',C.priceReduced,'number','min="0" step="0.01"')+
     af('c','fee','Taxa de serviço (R$)',C.fee,'number','min="0" step="0.01"')+af('c','limit','Limite técnico de atletas',C.limit,'number','min="1"')+af('c','maxInst','Máximo de parcelas',C.maxInst,'number','min="1" max="12"')+af('c','changeFee','Taxa de alteração (R$)',C.changeFee,'number','min="0" step="0.01"')+
+    af('c','kitInter','Adicional kit Intermediário (R$)',C.kitInter,'number','min="0" step="0.01"')+af('c','kitPremium','Adicional kit Premium (R$)',C.kitPremium,'number','min="0" step="0.01"')+
     '<div class="full"><button class="btn btn-sm" type="submit">Salvar configurações do evento</button></div></form>')+
 
   acc('Atividade recente','O que a equipe fez no painel. Ajuda a saber quem aprovou, reembolsou ou mudou o quê.',
@@ -722,7 +739,7 @@ document.addEventListener('submit',e=>{
   if(f==='opay'){DB.pay.gateway=g('gateway');save();toast('Gateway salvo.')}
   if(f==='oteam'){const em=g('email');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){toast('Digite um e-mail válido.');return}if(DB.team.some(m=>m.email.toLowerCase()===em.toLowerCase())){toast('Essa pessoa já está na equipe.');return}
     DB.team.push({id:'t'+Date.now(),name:em.split('@')[0],email:em,role:g('role'),status:'convite enviado'});logA('Convidou '+em+' ('+ROLES[g('role')][0]+')');toast('Convite enviado para '+em+'.')}
-  if(f==='ocfg'){const n=k=>parseFloat(fd.get(k));const c={priceGeral:n('priceGeral'),priceReduced:n('priceReduced'),fee:n('fee'),limit:parseInt(fd.get('limit'),10),maxInst:parseInt(fd.get('maxInst'),10),changeFee:n('changeFee')};
+  if(f==='ocfg'){const n=k=>parseFloat(fd.get(k));const c={priceGeral:n('priceGeral'),priceReduced:n('priceReduced'),fee:n('fee'),limit:parseInt(fd.get('limit'),10),maxInst:parseInt(fd.get('maxInst'),10),changeFee:n('changeFee'),kitInter:n('kitInter'),kitPremium:n('kitPremium')};
     if(Object.values(c).some(v=>isNaN(v)||v<0)||c.limit<1||c.maxInst<1){toast('Confira os valores: nenhum pode ficar vazio ou negativo.');return}
     DB.cfg=c;applyCfg();logA('Mudou as configurações do evento');toast('Configurações salvas. Já valem no site e nas novas inscrições.')}
   save();render();
@@ -739,7 +756,7 @@ function oModal(){
   }else if(r.status==='contestado')act='<button class="btn btn-sm" data-oa="goto-disp" data-id="'+r.id+'">Ver contestação</button>';
   return '<div class="overlay" data-oa="close"><div class="modal" role="dialog" aria-modal="true" aria-label="'+esc(r.name)+'">'+
   '<div class="row between" style="align-items:flex-start"><div><div class="row" style="gap:14px">'+badge(stTxt,r.status)+(PAIDS.includes(r.status)?badge(docTxt,r.doc):'')+(r.kit?'<span class="badge b-ok">Kit entregue</span>':'')+'</div><h2 style="font-size:26px;margin-top:10px">'+esc(r.name)+'</h2><p class="small muted mono">'+esc(r.protocol)+(r.bib?' · peito '+r.bib:'')+'</p></div><button class="x" data-oa="close" aria-label="Fechar">×</button></div>'+
-  '<dl class="kv">'+kv('Percurso',modLabel(r.modality)+' · '+catLabel(r.cat))+kv('País',flagTxt[r.country])+kv('Nascimento',r.birth?new Date(r.birth+'T12:00').toLocaleDateString('pt-BR')+' · '+ageAt(r.birth)+' anos na prova':'—')+
+  '<dl class="kv">'+kv('Percurso',modLabel(r.modality)+' · '+catLabel(r.cat))+kv('Kit',tierName(r)+(r.kitAdd?' · '+money(r.kitAdd):' · incluso'))+kv('País',flagTxt[r.country])+kv('Nascimento',r.birth?new Date(r.birth+'T12:00').toLocaleDateString('pt-BR')+' · '+ageAt(r.birth)+' anos na prova':'—')+
   kv('Documento',esc(r.docType)+' · '+esc(r.cpf?'CPF '+r.cpf:r.docNum)+'<br><span class="small muted mono">'+esc(r.docFile)+'</span>')+kv('E-mail',esc(r.email))+kv('Celular',esc(r.phone))+kv('Camiseta',esc(r.shirt))+kv('Emergência',esc(r.emergency))+
   kv('Pagamento',r.method?money(r.total)+' · '+(r.method==='pix'?'Pix':'cartão '+r.inst+'x')+'<br><span class="small muted">taxa do gateway '+money(gwFee(r))+' · '+fmtDT(r.paidAt||r.created)+'</span>':'—')+
   (r.refundedAt?kv('Reembolso',fmtDT(r.refundedAt)):'')+kv('Aceite dos termos',fmtDT(r.created)+' · IP '+esc(r.ip||'—'))+'</dl>'+act+'</div></div>';
@@ -770,7 +787,7 @@ document.addEventListener('click',e=>{
   case 'team-rm':{const i=DB.team.findIndex(m=>m.id===id);if(i>=0){logA('Removeu '+DB.team[i].email+' da equipe');DB.team.splice(i,1);save();toast('Acesso removido.');render()}break}
   case 'kit-ok':{const c=document.getElementById('kdoc');if(!c||!c.checked){toast('Marque que você conferiu o documento.');break}r.kit=true;r.kitAt=simNow();logA('Entregou o kit do peito '+r.bib);save();toast('Kit do peito '+r.bib+' entregue.');ORG.kitQ='';ORG.kitSel=null;render();const i=document.getElementById('kq');if(i)i.focus();break}
   case 'csv':{logA('Exportou a planilha de inscritos');const q=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';
-    const csv=[['protocolo','peito','nome','percurso','categoria','pais','documento','cpf_ou_doc','email','celular','camiseta','pagamento','forma','parcelas','total','documento_status','inscrito_em'].join(',')].concat(oFiltered().map(r=>[r.protocol,r.bib,r.name,modLabel(r.modality),catLabel(r.cat),flagTxt[r.country],r.docType,r.cpf||r.docNum,r.email,r.phone,r.shirt,stTxt[r.status][0],r.method,r.inst,r.total.toFixed(2),docTxt[r.doc][0],fmtDT(r.created)].map(q).join(','))).join('\n');
+    const csv=[['protocolo','peito','nome','percurso','categoria','kit','pais','documento','cpf_ou_doc','email','celular','camiseta','pagamento','forma','parcelas','total','documento_status','inscrito_em'].join(',')].concat(oFiltered().map(r=>[r.protocol,r.bib,r.name,modLabel(r.modality),catLabel(r.cat),tierName(r),flagTxt[r.country],r.docType,r.cpf||r.docNum,r.email,r.phone,r.shirt,stTxt[r.status][0],r.method,r.inst,r.total.toFixed(2),docTxt[r.doc][0],fmtDT(r.created)].map(q).join(','))).join('\n');
     try{navigator.clipboard.writeText(csv).then(()=>toast('Planilha copiada. Cole no Excel ou Google Sheets.'),()=>toast('Não deu para copiar neste navegador.'))}catch(x){toast('Não deu para copiar neste navegador.')}break}
   }
 });
@@ -796,7 +813,7 @@ function tick(){
 /* events */
 document.addEventListener('click',e=>{
   const g=e.target.closest('[data-go]');
-  if(g){const to=g.dataset.go;if(to==='inscricao'&&(g.dataset.cat||!S.draft)){S.draft=newDraft(g.dataset.cat);S.errors={}}go(to);return}
+  if(g){const to=g.dataset.go;if(to==='inscricao'&&(g.dataset.cat||g.dataset.tier||!S.draft)){S.draft=newDraft(g.dataset.cat);if(g.dataset.tier)S.draft.tier=g.dataset.tier;S.errors={}}go(to);return}
   const sc=e.target.closest('[data-scroll]');
   if(sc){const el=document.getElementById(sc.dataset.scroll);if(el)el.scrollIntoView();return}
   const a=e.target.closest('[data-act]');if(!a)return;
@@ -821,14 +838,14 @@ document.addEventListener('change',e=>{
   if(el.dataset.actChange==='inst'){S.inst=+el.value;render();return}
   if(route()!=='inscricao'||!el.dataset.f)return;
   const k=el.dataset.f;
-  if(['modality','cat','country'].includes(k)){capture();const d=D();if(k==='country')d.docType=DOCS[d.country][0];if(k==='cat')delete S.errors.cat;render()}
+  if(['modality','cat','country','tier'].includes(k)){capture();const d=D();if(k==='country')d.docType=DOCS[d.country][0];if(k==='cat')delete S.errors.cat;render()}
   else if(el.type==='file'){capture();delete S.errors[k];render()}
 });
 document.addEventListener('submit',e=>{
   const f=e.target.dataset.form;if(!f)return;e.preventDefault();
   if(f==='reg'){capture();if(!validate()){render();const bad=document.querySelector('.bad input,.bad select,.chk .err');if(bad)bad.scrollIntoView({block:'center'});return}
     const d=D(),n=DB.regs.length+1;
-    const r=Object.assign({},d,{id:'r'+Date.now(),protocol:'3F26-'+String(n).padStart(6,'0'),ip:'177.84.12.201',kit:false,kitAt:null,dispute:null,docReason:'',base:priceOf(d.cat),fee:FEE,interest:0,total:priceOf(d.cat)+FEE,status:'aguardando',created:simNow(),doc:'analise',bib:null,method:null,inst:1,paidAt:null,refundedAt:null});
+    const r=Object.assign({},d,{id:'r'+Date.now(),protocol:'3F26-'+String(n).padStart(6,'0'),ip:'177.84.12.201',kit:false,kitAt:null,dispute:null,docReason:'',base:priceOf(d.cat),kitAdd:KITS[d.tier].add,fee:FEE,interest:0,total:priceOf(d.cat)+KITS[d.tier].add+FEE,status:'aguardando',created:simNow(),doc:'analise',bib:null,method:null,inst:1,paidAt:null,refundedAt:null});
     DB.regs.push(r);save();S.checkout=r.id;S.pay=r.country==='BR'?'pix':'card';S.inst=1;S.errors={};S.cardErr='';go('checkout')}
   if(f==='card'){const v=id=>document.getElementById(id).value.trim(),n=v('cn').replace(/\D/g,''),e2={};
     if(!luhn(n))e2.cn='Número de cartão inválido.';if(!v('ch'))e2.ch='Preencha este campo.';

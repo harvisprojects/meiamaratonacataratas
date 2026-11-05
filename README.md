@@ -7,7 +7,8 @@ Plataforma própria de inscrições da prova: site do evento, inscrição, pagam
 Protótipo navegável em [`prototipo/index.html`](prototipo/index.html). É um arquivo HTML único, sem servidor: abra no navegador.
 
 - **Landing page:** data, percursos (21 km e 10,5 km), preços, retirada de kit, regulamento e dúvidas.
-- **Inscrição:** percurso, categoria, dados do atleta (CPF para brasileiros, documento do país para estrangeiros), envio de documento e aceite dos termos.
+- **Kits em três níveis:** Básico (incluso), Intermediário e Premium, com seção própria na landing page. Itens e preços são de exemplo e ajustáveis no painel.
+- **Inscrição:** percurso, categoria, kit, dados do atleta (CPF para brasileiros, documento do país para estrangeiros), envio de documento e aceite dos termos.
 - **Checkout do gateway:** tela simulada. No sistema real ela é do Mercado Pago (Checkout Pro) ou da Stripe.
 - **Área do atleta:** número de peito, QR code para retirada do kit, status do documento e do pagamento, cancelamento em até 7 dias.
 - **Painel da organização** (link "Organização" no rodapé): visão geral, inscritos, documentos, financeiro, contestações (chargeback), entrega de kits e conta do administrador (dados pessoais, organização, gateway, equipe com permissões, configurações do evento e registro de atividade).
