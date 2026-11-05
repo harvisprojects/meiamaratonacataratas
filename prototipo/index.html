@@ -71,24 +71,30 @@ p{margin:0}
 .site-h .acts{display:flex;gap:10px;align-items:center}
 @media (max-width:820px){.site-h nav{display:none}.site-h .acts{margin-left:auto}.hide-sm{display:none}}
 
-/* hero */
-.hero{background:var(--bg);color:var(--ink)}
-.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:center;padding-block:56px 64px}
-.h-hero{font:900 clamp(3.4rem,8.4vw,7.6rem)/.86 var(--display);text-transform:uppercase;letter-spacing:-.005em;margin-top:18px}
-.h-hero span{display:block;color:var(--forest-2)}
-.hero .lead{font-size:19px;line-height:1.5;max-width:42ch;margin-top:24px;color:var(--muted)}
-.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
-.count{display:flex;gap:28px;margin-top:40px;padding-top:24px;border-top:1px solid var(--line);max-width:420px}
-.count div{display:flex;flex-direction:column}
-.count b{font:800 44px/1 var(--display);font-variant-numeric:tabular-nums}
-.count span{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+/* hero: banner em tela cheia, texto no céu à direita (desktop) ou sobre degradê embaixo (celular) */
+.hero{position:relative;background:#16324a;color:#fff;overflow:hidden;min-height:max(540px,calc(100svh - 64px - var(--tbar,0px)));display:flex}
+.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:30% 40%;max-width:none}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,25,40,0) 38%,rgba(10,25,40,.38) 100%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1;width:100%;display:flex;justify-content:flex-end;align-items:center;padding-block:48px}
+.hero-txt{width:min(520px,44%)}
+.hero .eyebrow{color:rgba(255,255,255,.88)}
+.h-hero{font:900 clamp(3.2rem,7.2vw,7rem)/.86 var(--display);text-transform:uppercase;letter-spacing:-.005em;margin-top:14px;text-shadow:0 2px 24px rgba(0,20,40,.35)}
+.h-hero span{display:block;color:var(--sun)}
+.hero .lead{font-size:19px;line-height:1.5;max-width:40ch;margin-top:20px;color:rgba(255,255,255,.94);text-shadow:0 1px 12px rgba(0,20,40,.4)}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.hero .btn-line{color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.75)}
+.hero .btn-line:hover{box-shadow:inset 0 0 0 1.5px #fff}
+@media (max-width:900px){
+  .hero{min-height:max(500px,calc(100svh - 64px - var(--tbar,0px)))}
+  .hero-bg{object-position:24% 30%}
+  .hero::after{background:linear-gradient(180deg,rgba(10,25,40,0) 30%,rgba(10,25,40,.55) 58%,rgba(10,25,40,.88) 100%)}
+  .hero .wrap{align-items:flex-end;justify-content:flex-start;padding-block:32px}
+  .hero-txt{width:100%}
+  .hero .lead{font-size:16px}
+}
 .photo{margin:0;position:relative;border-radius:14px;overflow:hidden;background:var(--surface);max-width:100%}
 .photo img{display:block;width:100%;height:100%;object-fit:cover}
 .photo figcaption{position:absolute;left:12px;bottom:12px;font-size:11px;color:#fff;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:4px;max-width:calc(100% - 24px)}
-.hero .photo{aspect-ratio:4/5}
-.hero .photo .badge-date{position:absolute;top:16px;right:16px;background:var(--sun);color:var(--on-sun);font:900 22px/1 var(--display);text-transform:uppercase;padding:10px 14px;border-radius:8px;text-align:center}
-.hero .photo .badge-date small{display:block;font:600 11px/1.2 var(--body);letter-spacing:.08em;margin-top:4px}
-@media (max-width:900px){.hero .wrap{grid-template-columns:1fr;padding-block:36px 48px;gap:32px}.hero .photo{aspect-ratio:4/3}}
 
 /* mapa do percurso */
 .map{margin:0;max-width:100%;border:1px solid var(--line);border-radius:14px;padding:20px;background:var(--surface)}
@@ -508,16 +514,15 @@ function vLanding(){
 <a class="btn btn-ink" href="#inscricao" data-act="pick" data-dist="${k}">Inscrever no ${D.label}</a></article>`};
   const kit=k=>{const K=KITS[k],a=kitAdd(k);return `<div class="kit"><div><h3>${K.name}</h3><p class="add muted">${a?'+ '+money(a):'Incluso na inscrição'}</p></div><ul>${K.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>`};
   return siteHeader()+`<main>
-<section class="hero"><div class="wrap">
-  <div>
+<section class="hero">
+  <img class="hero-bg" src="img/hero.jpg" alt="Dois corredores com a camisa da prova passam pelo mirante, com o marco da fronteira e o rio ao fundo" fetchpriority="high">
+  <div class="wrap"><div class="hero-txt">
     <p class="eyebrow">Meia Maratona Internacional das 3 Fronteiras · 2026</p>
     <h1 class="h-hero">Três países.<span>Uma chegada.</span></h1>
-    <p class="lead">Largue no Paraguai ou no Brasil e cruze a linha de chegada na Argentina, no ponto onde os rios Paraná e Iguaçu se encontram.</p>
+    <p class="lead">Largue no Paraguai ou no Brasil e cruze a linha de chegada na Argentina, onde os rios Paraná e Iguaçu se encontram.</p>
     <div class="hero-cta"><a class="btn" href="#inscricao">Inscreva-se</a><a class="btn btn-line" href="#prova">Ver os percursos</a></div>
-    <div class="count" id="count" aria-label="Tempo até a largada">${countHTML()}</div>
-  </div>
-  ${photo('runners','',`<div class="badge-date">11 out<small>Largada 06h30</small></div>`)}
-</div></section>
+  </div></div>
+</section>
 <section class="facts"><div class="wrap">
   <div><span class="eyebrow">Data</span><b>11 out 2026</b></div>
   <div><span class="eyebrow">Largada</span><b>06h30</b></div>
@@ -860,7 +865,7 @@ function go(h){if(location.hash.slice(1)===h)render(true);else location.hash=h}
 function html(){const v=view();return testBar()+({inscricao:vForm,pagamento:vCheckout,atleta:vPortal,org:vOrg}[v]||vLanding)()}
 function render(force){
   const v=view(),h=location.hash.slice(1);
-  $('#app').innerHTML=html();
+  $('#app').innerHTML=html();setTbar();
   if(v!==lastView||force){if(LANDING_ANCHORS.includes(h)){const el=document.getElementById(h);if(el)el.scrollIntoView()}else window.scrollTo(0,0)}
   else if(LANDING_ANCHORS.includes(h)){const el=document.getElementById(h);if(el)el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
   if(v!=='atleta')FLASH='';
@@ -872,7 +877,8 @@ function rerender(){
   if(id){const el=document.getElementById(id);if(el){el.focus({preventScroll:true});try{if(s!=null)el.setSelectionRange(s,s)}catch(e){}}}
 }
 addEventListener('hashchange',()=>render());
-setInterval(()=>{const c=document.getElementById('count');if(c)c.innerHTML=countHTML()},15000);
+function setTbar(){const t=document.querySelector('.testbar');document.documentElement.style.setProperty('--tbar',(t?t.offsetHeight:0)+'px')}
+addEventListener('resize',setTbar);
 
 /* ---------- eventos ---------- */
 document.addEventListener('click',e=>{
