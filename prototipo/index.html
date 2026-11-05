@@ -71,26 +71,46 @@ p{margin:0}
 .site-h .acts{display:flex;gap:10px;align-items:center}
 @media (max-width:820px){.site-h nav{display:none}.site-h .acts{margin-left:auto}.hide-sm{display:none}}
 
-/* hero: banner em tela cheia, texto no céu à direita (desktop) ou sobre degradê embaixo (celular) */
-.hero{position:relative;background:#16324a;color:#fff;overflow:hidden;min-height:max(540px,calc(100svh - 64px - var(--tbar,0px)));display:flex}
+/* hero: banner em tela cheia; menu transparente por cima, que fica branco ao rolar */
+.site-h{transition:background-color .25s ease,border-color .25s ease}
+.site-h.over:not(.solid){background:transparent;border-bottom-color:transparent}
+.site-h.over{margin-bottom:-64px}
+.site-h.over:not(.solid) .brand,.site-h.over:not(.solid) .brand i,.site-h.over:not(.solid) nav a{color:#fff}
+.site-h.over:not(.solid) .brand,.site-h.over:not(.solid) nav a{text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.site-h.over:not(.solid) .btn-line{color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7)}
+.hero{position:relative;background:#16324a;color:#fff;overflow:hidden;min-height:max(600px,calc(100svh - var(--tbar,0px)));display:flex;flex-direction:column;padding-top:64px}
 .hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:30% 40%;max-width:none}
-.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,25,40,0) 38%,rgba(10,25,40,.38) 100%);pointer-events:none}
-.hero .wrap{position:relative;z-index:1;width:100%;display:flex;justify-content:flex-end;align-items:center;padding-block:48px}
+.hero::before{content:"";position:absolute;inset:0 0 auto;height:180px;background:linear-gradient(180deg,rgba(8,20,32,.72) 0%,rgba(8,20,32,.4) 45%,rgba(8,20,32,0) 100%);pointer-events:none;z-index:1}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,25,40,0) 38%,rgba(10,25,40,.38) 100%),linear-gradient(180deg,rgba(10,25,40,0) 62%,rgba(10,25,40,.82) 100%);pointer-events:none}
+.hero .wrap{position:relative;z-index:2;width:100%}
+.hero-main{flex:1;display:flex;justify-content:flex-end;align-items:center;padding-block:40px}
 .hero-txt{width:min(520px,44%)}
-.hero .eyebrow{color:rgba(255,255,255,.88)}
+.hero .eyebrow{color:rgba(255,255,255,.85)}
 .h-hero{font:900 clamp(3.2rem,7.2vw,7rem)/.86 var(--display);text-transform:uppercase;letter-spacing:-.005em;margin-top:14px;text-shadow:0 2px 24px rgba(0,20,40,.35)}
 .h-hero span{display:block;color:var(--sun)}
 .hero .lead{font-size:19px;line-height:1.5;max-width:40ch;margin-top:20px;color:rgba(255,255,255,.94);text-shadow:0 1px 12px rgba(0,20,40,.4)}
 .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
 .hero .btn-line{color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.75)}
 .hero .btn-line:hover{box-shadow:inset 0 0 0 1.5px #fff}
+.hero-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid rgba(255,255,255,.35)}
+.hero-facts div{padding:22px 20px 28px 0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.hero-facts div+div{padding-left:24px;border-left:1px solid rgba(255,255,255,.25)}
+.hero-facts b{font:800 clamp(28px,3.4vw,48px)/1 var(--display);text-transform:uppercase;color:#fff;white-space:nowrap}
 @media (max-width:900px){
-  .hero{min-height:max(500px,calc(100svh - 64px - var(--tbar,0px)))}
+  .hero{min-height:calc(100svh - var(--tbar,0px))}
   .hero-bg{object-position:24% 30%}
-  .hero::after{background:linear-gradient(180deg,rgba(10,25,40,0) 30%,rgba(10,25,40,.55) 58%,rgba(10,25,40,.88) 100%)}
-  .hero .wrap{align-items:flex-end;justify-content:flex-start;padding-block:32px}
+  .hero::after{background:linear-gradient(180deg,rgba(10,25,40,0) 26%,rgba(10,25,40,.6) 50%,rgba(10,25,40,.92) 100%)}
+  .hero-main{align-items:flex-end;justify-content:flex-start;padding-block:24px 16px}
   .hero-txt{width:100%}
-  .hero .lead{font-size:16px}
+  .h-hero{font-size:clamp(2.9rem,13vw,4.6rem)}
+  .hero .lead{font-size:16px;margin-top:14px}
+  .hero-cta{margin-top:20px}
+  .hero-facts{grid-template-columns:1fr 1fr}
+  .hero-facts div{padding:14px 12px 14px 0}
+  .hero-facts div+div{padding-left:14px}
+  .hero-facts div:nth-child(3){padding-left:0;border-left:0}
+  .hero-facts div:nth-child(n+3){border-top:1px solid rgba(255,255,255,.25)}
+  .hero-facts b{font-size:26px}
 }
 .photo{margin:0;position:relative;border-radius:14px;overflow:hidden;background:var(--surface);max-width:100%}
 .photo img{display:block;width:100%;height:100%;object-fit:cover}
@@ -117,15 +137,8 @@ p{margin:0}
 .course-txt p{font-size:15px;color:var(--muted)}
 @media (max-width:860px){.course,.course-txt{grid-template-columns:1fr}.course .photo{aspect-ratio:4/3}}
 
-/* faixa de fatos */
-.facts{border-bottom:1px solid var(--line)}
-.facts .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
-.facts div{padding:22px 20px 22px 0;display:flex;flex-direction:column;gap:4px}
-.facts div+div{padding-left:20px;border-left:1px solid var(--line)}
-.facts b{font:800 26px/1.1 var(--display);text-transform:uppercase}
-@media (max-width:720px){.facts .wrap{grid-template-columns:1fr 1fr}.facts div:nth-child(3){padding-left:0;border-left:0}.facts div:nth-child(n+3){border-top:1px solid var(--line)}}
-
 /* seções */
+section[id]{scroll-margin-top:64px}
 .sec{padding-block:88px}
 .sec + .sec{border-top:1px solid var(--line)}
 .sec-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px 40px;margin-bottom:40px}
@@ -147,16 +160,29 @@ p{margin:0}
 .dist .btn{margin-top:auto;align-self:start}
 @media (max-width:760px){.dists{grid-template-columns:1fr}.dist{padding:0 22px 24px}.dist .photo{margin:0 -22px;width:calc(100% + 44px)}}
 
-/* kits */
-.kits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.kit{padding:28px;display:flex;flex-direction:column;gap:16px;min-width:0}
-.kit+.kit{border-left:1px solid var(--line)}
-.kit h3{font:800 30px/1 var(--display);text-transform:uppercase}
-.kit .add{font-weight:600}
-.kit ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:15px}
-.kit li{padding-left:20px;position:relative}
-.kit li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:2px;background:var(--forest-2)}
-@media (max-width:820px){.kits{grid-template-columns:1fr}.kit+.kit{border-left:0;border-top:1px solid var(--line)}}
+/* kit Fronteira Pro: faixa escura de destaque */
+.pro{background:#0E2233;color:#fff}
+.pro .wrap{padding-block:96px}
+.pro .eyebrow{color:var(--sun)}
+.pro-g{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:56px;align-items:center}
+.pro-h{font:900 clamp(3rem,7vw,6rem)/.86 var(--display);text-transform:uppercase;margin-top:12px}
+.pro-h span{display:block;color:var(--sun)}
+.pro-lead{font-size:18px;line-height:1.55;color:rgba(255,255,255,.82);max-width:46ch;margin-top:20px}
+.pro-list{list-style:none;margin:32px 0 36px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 32px}
+.pro-list li{display:flex;align-items:baseline;gap:14px;padding:14px 0;border-top:1px solid rgba(255,255,255,.16);font:700 clamp(20px,2vw,24px)/1.15 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.pro-list li span{font:500 12px/1 var(--mono);color:var(--sun);letter-spacing:0}
+.pro-img{margin:0;border-radius:14px;overflow:hidden;aspect-ratio:4/5;max-width:100%}
+.pro-img img{width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block}
+.perks{margin-top:80px;padding-top:40px;border-top:1px solid rgba(255,255,255,.16)}
+.perks-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;margin-top:20px}
+.perk h3{font:800 28px/1 var(--display);text-transform:uppercase}
+.perk p{color:rgba(255,255,255,.75);font-size:15px;margin-top:10px;max-width:36ch}
+@media (max-width:860px){.pro .wrap{padding-block:64px}.pro-g{grid-template-columns:1fr;gap:36px}.pro-img{aspect-ratio:1/1}.perks{margin-top:56px}.perks-g{grid-template-columns:1fr;gap:28px}}
+@media (max-width:480px){.pro-list{grid-template-columns:1fr}}
+.kit-inc{display:flex;justify-content:space-between;align-items:center;gap:16px;border:1.5px solid var(--ink);border-radius:10px;padding:18px 20px}
+.kit-inc b{display:block;font-weight:700;font-size:17px}
+.kit-inc .d{display:block;font-size:14px;color:var(--muted);margin-top:4px}
+.kit-inc .pr{font-weight:700;white-space:nowrap}
 
 /* informações */
 .info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px}
@@ -365,8 +391,10 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const DIAC=new RegExp('['+String.fromCharCode(0x300)+'-'+String.fromCharCode(0x36f)+']','g');
 const norm=s=>String(s||'').normalize('NFD').replace(DIAC,'').toLowerCase();
-const money=v=>(+v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const moneyK=v=>v>=1e4?'R$ '+(v/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mil':money(v);
+/* preços ainda não definidos: todo valor em reais aparece como placeholder */
+const PRICE_PH='R$ 000,00';
+const money=()=>PRICE_PH;
+const moneyK=()=>PRICE_PH;
 const int=v=>(+v||0).toLocaleString('pt-BR');
 const fmtD=t=>new Date(t).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
 const fmtDT=t=>new Date(t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
@@ -383,9 +411,7 @@ const DIST={
 };
 const FINISH='Marco das Três Fronteiras, Puerto Iguazú (AR)';
 const KITS={
-  basico:{name:'Básico',items:['Número de peito com chip','Camiseta oficial','Medalha de finisher']},
-  intermediario:{name:'Intermediário',items:['Tudo do Básico','Camiseta finisher','Sacochila']},
-  premium:{name:'Premium',items:['Tudo do Intermediário','Corta-vento','Retirada de kit sem fila','Ônibus da chegada de volta a Foz']}
+  pro:{name:'Fronteira Pro',items:['Camiseta oficial','Kit compressão','Meia de compressão','Manguito','Cap','Botton','Squeeze']}
 };
 const COUNTRY={BR:'Brasil',PY:'Paraguai',AR:'Argentina',OT:'Outro país'};
 const DOCLABEL={BR:'CPF',PY:'Cédula de identidad',AR:'DNI',OT:'Passaporte'};
@@ -400,7 +426,7 @@ function luhn(n){const d=String(n).replace(/\D/g,'');if(d.length<13)return false
 function ageAt(b,t=EVENT){const d=new Date(b+'T12:00'),e=new Date(t);let a=e.getFullYear()-d.getFullYear();const m=e.getMonth()-d.getMonth();if(m<0||(m===0&&e.getDate()<d.getDate()))a--;return a}
 
 /* ---------- dados ---------- */
-const KEY='tf-v5';
+const KEY='tf-v6';
 let DB;
 const NAMES={
   BR:{f:['Ana','Beatriz','Camila','Fernanda','Juliana','Larissa','Mariana','Patrícia','Renata','Tatiane','Gabriela','Luana'],m:['Bruno','Carlos','Diego','Eduardo','Felipe','Gustavo','João','Lucas','Marcelo','Rafael','Thiago','Vinícius'],l:['Silva','Souza','Oliveira','Pereira','Costa','Almeida','Ferreira','Rodrigues','Lima','Carvalho','Ribeiro','Martins','Schmidt','Kowalski']},
@@ -408,15 +434,15 @@ const NAMES={
   AR:{f:['Sofía','Valentina','Florencia','Agustina','Julieta','Camila'],m:['Martín','Santiago','Facundo','Nicolás','Matías','Joaquín'],l:['Fernández','López','Romero','Sosa','Díaz','Acosta','Medina','Herrera']}
 };
 function defaults(){return{
-  v:5,regs:[],
-  cfg:{p21:300,p10:250,fee:20,limit:2500,kitInter:90,kitPremium:240,maxInst:6,lote:'1º lote, até 31/08'},
+  v:6,regs:[],
+  cfg:{p21:300,p10:250,fee:20,limit:2500,maxInst:6,lote:'1º lote, até 31/08'},
   admin:{name:'Marina Duarte',email:'organizacao@exemplo.com',phone:'+55 45 99900-1234',role:'Diretora de prova'},
   orgi:{name:'Associação Corrida das 3 Fronteiras',cnpj:'12.345.678/0001-90',city:'Foz do Iguaçu, PR',email:'contato@exemplo.com',gateway:'Mercado Pago · modo de teste'},
   team:[{id:'t1',name:'Marina Duarte',email:'organizacao@exemplo.com',role:'admin'},{id:'t2',name:'Rafael Benítez',email:'financeiro@exemplo.com',role:'financeiro'},{id:'t3',name:'Lucía Ortiz',email:'kits@exemplo.com',role:'kits'}],
   log:[],sess:{athlete:null,org:false,pending:null}
 }}
 const priceOf=d=>d==='21'?DB.cfg.p21:DB.cfg.p10;
-const kitAdd=t=>t==='premium'?DB.cfg.kitPremium:t==='intermediario'?DB.cfg.kitInter:0;
+const kitAdd=()=>0;
 function calc(base,kit,fee,method,inst){const sub=base+kit+fee,interest=method==='card'&&inst>1?Math.round(sub*.0199*(inst-1)*100)/100:0;return{sub,interest,total:sub+interest}}
 const gwFee=r=>r.method==='pix'?r.total*.0099:r.total*.0399+.39;
 
@@ -428,13 +454,13 @@ function seed(){
     const x=r(),c=x<.6?'BR':x<.82?'PY':'AR',P=NAMES[c],sex=r()<.46?'F':'M';
     const first=pick(sex==='F'?P.f:P.m),l1=pick(P.l),l2=pick(P.l);
     const dist=r()<.58?'21':'10';
-    const kz=r(),tier=kz<.55?'basico':kz<.85?'intermediario':'premium';
+    r();const tier='pro';
     const sx=r();
     let status=sx<.875||sx>=.975?'pago':sx<.89?'pendente':sx<.955?'reembolsado':sx<.968?'contestado':'estornado';
     let created=r()<.17?start+r()*3*DAY:start+(SIM0-start)*Math.pow(r(),.75);
     if(status==='pendente')created=SIM0-r()*25*60e3;
     const method=r()<.56?'card':'pix',inst=method==='card'?pick([1,1,1,2,3,6]):1;
-    const base=dist==='21'?300:250,kit=tier==='premium'?240:tier==='intermediario'?90:0;
+    const base=dist==='21'?300:250,kit=0;
     const t=calc(base,kit,20,method,inst);
     const y=1962+Math.floor(r()*44),birth=y+'-'+String(1+Math.floor(r()*12)).padStart(2,'0')+'-'+String(1+Math.floor(r()*28)).padStart(2,'0');
     const doc=c==='BR'?genCPF(r):c==='PY'?String(3e6+Math.floor(r()*4e6)):String(2e7+Math.floor(r()*2e7));
@@ -452,12 +478,12 @@ function seed(){
   const n={'21':1001,'10':5001};
   regs.forEach((g,i)=>{g.protocol='3F26-'+String(i+1).padStart(6,'0');if(g.status!=='pendente')g.bib=n[g.dist]++});
   const demo=regs.find(g=>g.status==='pago'&&g.country==='BR'&&g.dist==='21');
-  Object.assign(demo,{name:'Ana Paula Souza',email:'atleta@exemplo.com',tier:'intermediario'});
+  Object.assign(demo,{name:'Ana Paula Souza',email:'atleta@exemplo.com'});
   db.regs=regs;
   db.log=[{t:SIM0-2*36e5,who:'Rafael Benítez',what:'Exportou a lista de inscritos'},{t:SIM0-DAY,who:'Marina Duarte',what:'Alterou o limite de atletas para 2.500'},{t:SIM0-3*DAY,who:'Rafael Benítez',what:'Enviou provas de uma contestação'}];
   return db;
 }
-function load(){try{const s=localStorage.getItem(KEY);if(s){const d=JSON.parse(s);if(d&&d.v===5)return d}}catch(e){}return seed()}
+function load(){try{const s=localStorage.getItem(KEY);if(s){const d=JSON.parse(s);if(d&&d.v===6)return d}}catch(e){}return seed()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
 function logA(what){DB.log.unshift({t:now(),who:DB.admin.name,what});DB.log=DB.log.slice(0,40)}
 DB=load();
@@ -471,8 +497,8 @@ let toastT;
 function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3400)}
 function testBar(){return `<div class="testbar"><div class="wrap"><b>Modo de teste</b><span>Dados e pagamentos fictícios</span><span class="sp"></span>
 <button data-act="quick-insc">Inscrição rápida</button><button data-act="quick-athlete">Entrar como atleta</button><button data-act="quick-org">Painel da organização</button><button data-act="reset">Zerar dados</button></div></div>`}
-function siteHeader(){return `<header class="site-h"><div class="wrap"><a class="brand" href="#inicio">Meia <i>3</i> Fronteiras</a>
-<nav><a href="#prova">A prova</a><a href="#percurso">Percurso</a><a href="#kits">Kits</a><a href="#info">Informações</a><a href="#duvidas">Dúvidas</a></nav>
+function siteHeader(over){return `<header class="site-h${over?' over':''}"><div class="wrap"><a class="brand" href="#inicio">Meia <i>3</i> Fronteiras</a>
+<nav><a href="#prova">A prova</a><a href="#kits">Kit Pro</a><a href="#percurso">Percurso</a><a href="#info">Informações</a><a href="#duvidas">Dúvidas</a></nav>
 <div class="acts"><a class="btn btn-line btn-sm hide-sm" href="#atleta">Área do atleta</a><a class="btn btn-sm" href="#inscricao">Inscreva-se</a></div></div></header>`}
 function siteFoot(){return `<footer class="foot"><div class="wrap"><span>Meia Maratona Internacional das 3 Fronteiras · 11 de outubro de 2026</span>
 <nav><a href="#atleta">Área do atleta</a><a href="#duvidas">Regulamento</a><a href="#org">Organização</a></nav></div><div class="wrap" style="padding-bottom:28px"><details class="credits"><summary>Créditos das fotos (Wikimedia Commons)</summary><ul>${Object.values(PHOTOS).map(P=>`<li>${esc(P.alt)}: ${esc(P.by)}, <a href="${P.url}" target="_blank" rel="noopener">${P.lic}</a></li>`).join('')}</ul></details></div></footer>`}
@@ -512,25 +538,25 @@ function vLanding(){
   const dist=k=>{const D=DIST[k];return `<article class="dist">${photo(k==='21'?'ponte':'falls',k==='21'?'Ponte da Amizade, no caminho do 21K':'Cataratas do Iguaçu, no fim da avenida da largada do 10K')}<div class="dist-top"><div class="km">${D.label}</div><div class="price"><b>${money(priceOf(k))}</b><span>${esc(c.lote)}</span></div></div>
 <dl class="route"><dt>Largada</dt><dd>06h30 · ${esc(D.fromLong)}</dd><dt>Chegada</dt><dd>${FINISH}</dd><dt>Distância</dt><dd>${D.km} · ${D.cross}</dd></dl>
 <a class="btn btn-ink" href="#inscricao" data-act="pick" data-dist="${k}">Inscrever no ${D.label}</a></article>`};
-  const kit=k=>{const K=KITS[k],a=kitAdd(k);return `<div class="kit"><div><h3>${K.name}</h3><p class="add muted">${a?'+ '+money(a):'Incluso na inscrição'}</p></div><ul>${K.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>`};
-  return siteHeader()+`<main>
+  const perk=(t,d)=>`<div class="perk"><h3>${t}</h3><p>${d}</p></div>`;
+  return siteHeader(true)+`<main>
 <section class="hero">
-  <img class="hero-bg" src="img/hero.jpg" alt="Dois corredores com a camisa da prova passam pelo mirante, com o marco da fronteira e o rio ao fundo" fetchpriority="high">
-  <div class="wrap"><div class="hero-txt">
+  <img class="hero-bg" src="img/hero.jpg" alt="Dois corredores com o kit da prova passam pelo mirante, com o marco da fronteira e o rio ao fundo" fetchpriority="high">
+  <div class="wrap hero-main"><div class="hero-txt">
     <p class="eyebrow">Meia Maratona Internacional das 3 Fronteiras · 2026</p>
     <h1 class="h-hero">Três países.<span>Uma chegada.</span></h1>
-    <p class="lead">Largue no Paraguai ou no Brasil e cruze a linha de chegada na Argentina, onde os rios Paraná e Iguaçu se encontram.</p>
-    <div class="hero-cta"><a class="btn" href="#inscricao">Inscreva-se</a><a class="btn btn-line" href="#prova">Ver os percursos</a></div>
+    <p class="lead">Uma meia maratona cuidada em cada detalhe: kit Fronteira Pro completo, área VIP na chegada e volta garantida para Foz. Você só precisa correr.</p>
+    <div class="hero-cta"><a class="btn" href="#inscricao">Inscreva-se</a><a class="btn btn-line" href="#kits">Conheça o kit Pro</a></div>
   </div></div>
+  <div class="wrap hero-facts">
+    <div><span class="eyebrow">Data</span><b>11 out 2026</b></div>
+    <div><span class="eyebrow">Largada</span><b>06h30</b></div>
+    <div><span class="eyebrow">Distâncias</span><b>21K e 10K</b></div>
+    <div><span class="eyebrow">Vagas restantes</span><b class="num">${int(left())}</b></div>
+  </div>
 </section>
-<section class="facts"><div class="wrap">
-  <div><span class="eyebrow">Data</span><b>11 out 2026</b></div>
-  <div><span class="eyebrow">Largada</span><b>06h30</b></div>
-  <div><span class="eyebrow">Distâncias</span><b>21K e 10K</b></div>
-  <div><span class="eyebrow">Vagas restantes</span><b class="num">${int(left())}</b></div>
-</div></section>
 <section class="sec" id="prova"><div class="wrap">
-  <div class="sec-h"><div><p class="eyebrow">A prova</p><h2 class="h2">Escolha sua distância</h2></div><p class="muted">As duas largam às 06h30 e terminam no mesmo lugar. Aberto a todos os públicos a partir de 18 anos.</p></div>
+  <div class="sec-h"><div><p class="eyebrow">A prova</p><h2 class="h2">Escolha sua distância</h2></div><p class="muted">As duas largam às 06h30 e chegam ao mesmo mirante. Em qualquer uma, você recebe o kit Fronteira Pro completo e tem acesso à área VIP.</p></div>
   <div class="dists">${dist('21')}${dist('10')}</div>
 </div></section>
 <section class="sec" id="percurso"><div class="wrap">
@@ -542,16 +568,32 @@ function vLanding(){
     <div><b>Argentina</b><p>Chegada no mirante onde se veem os três países ao mesmo tempo.</p></div>
   </div>
 </div></section>
-<section class="sec" id="kits"><div class="wrap">
-  <div class="sec-h"><div><p class="eyebrow">Kits</p><h2 class="h2">Três kits, uma escolha</h2></div><p class="muted">Você escolhe o kit na inscrição. O Básico já está incluso no preço.</p></div>
-  <div class="kits">${kit('basico')}${kit('intermediario')}${kit('premium')}</div>
+<section class="pro" id="kits"><div class="wrap">
+  <div class="pro-g">
+    <div class="pro-txt">
+      <p class="eyebrow">Incluso em toda inscrição</p>
+      <h2 class="pro-h">Kit<span>Fronteira Pro</span></h2>
+      <p class="pro-lead">Equipamento de prova, não lembrancinha. Peças técnicas de compressão para você largar vestido como atleta profissional, nas duas distâncias, sem pagar nada a mais.</p>
+      <ul class="pro-list">${KITS.pro.items.map((i,n)=>`<li><span>${String(n+1).padStart(2,'0')}</span>${esc(i)}</li>`).join('')}</ul>
+      <a class="btn" href="#inscricao">Garanta seu kit</a>
+    </div>
+    <figure class="pro-img"><img src="img/kit.jpg" alt="Corredor com o kit Fronteira Pro completo (camiseta, manguito, cap e meia de compressão) diante das Cataratas do Iguaçu" loading="lazy"></figure>
+  </div>
+  <div class="perks">
+    <p class="eyebrow">A experiência</p>
+    <div class="perks-g">
+      ${perk('Área VIP na chegada','Espaço reservado para os atletas no Marco das Três Fronteiras, com sombra, hidratação e frutas para você comemorar com calma.')}
+      ${perk('Retirada do kit sem fila','Você agenda o horário pela Área do atleta, mostra o QR code e sai com o kit em poucos minutos.')}
+      ${perk('Volta garantida para Foz','Ônibus exclusivos levam todos os atletas da chegada, em Puerto Iguazú, de volta a Foz do Iguaçu.')}
+    </div>
+  </div>
 </div></section>
 <section class="sec" id="info"><div class="wrap">
   <div class="sec-h"><div><p class="eyebrow">Antes de correr</p><h2 class="h2">O que você precisa saber</h2></div></div>
   <div class="info">
     <div><h3>Leve documento para cruzar a fronteira</h3><p>Você passa pela aduana correndo. Leve RG, cédula ou passaporte original no bolso ou na pochete. Sem documento, não há largada.</p></div>
-    <div><h3>Retirada do kit</h3><p>Nos dois dias antes da prova, em Foz do Iguaçu. Apresente o QR code da Área do atleta e um documento com foto. Local e horários chegam por e-mail.</p></div>
-    <div><h3>Volta da chegada</h3><p>A chegada é em Puerto Iguazú. Ônibus levam os atletas de volta a Foz do Iguaçu a partir das 08h30. No kit Premium, o lugar é garantido.</p></div>
+    <div><h3>Retirada do kit</h3><p>Nos dois dias antes da prova, em Foz do Iguaçu, com horário agendado pela Área do atleta. Leve o QR code e um documento com foto.</p></div>
+    <div><h3>Volta da chegada</h3><p>A chegada é em Puerto Iguazú. Os ônibus da organização levam todos os atletas de volta a Foz do Iguaçu a partir das 08h30, sem custo extra.</p></div>
   </div>
 </div></section>
 <section class="sec" id="duvidas"><div class="wrap">
@@ -559,12 +601,13 @@ function vLanding(){
   <div class="faq">
     <details><summary>Quais formas de pagamento posso usar?</summary><p>Pix e cartão de crédito, inclusive cartões emitidos no Paraguai e na Argentina. No cartão, até ${c.maxInst}x, com juros a partir da 2ª parcela.</p></details>
     <details><summary>Posso cancelar minha inscrição?</summary><p>Sim, em até 7 dias depois da compra, pela Área do atleta. O valor volta pela mesma forma de pagamento.</p></details>
-    <details><summary>Posso trocar de distância ou de kit?</summary><p>Sim, até 30 dias antes da prova, pela Área do atleta. Se o novo valor for maior, você paga a diferença.</p></details>
+    <details><summary>O kit Fronteira Pro tem custo extra?</summary><p>Não. O kit completo está incluso em todas as inscrições, no 21K e no 10K. Você só escolhe o tamanho da camiseta.</p></details>
+    <details><summary>Posso trocar de distância?</summary><p>Sim, até 30 dias antes da prova, pela Área do atleta. Se o novo valor for maior, você paga a diferença.</p></details>
     <details><summary>Quantos anos preciso ter?</summary><p>18 anos completos no dia da prova, para as duas distâncias.</p></details>
     <details><summary>Existe taxa de serviço?</summary><p>Sim, ${money(c.fee)} por inscrição, já mostrados no resumo antes do pagamento.</p></details>
   </div>
 </div></section>
-<section class="final"><div class="wrap"><div><h2>${int(left())} vagas restantes</h2><p>Limite de ${int(c.limit)} atletas nas duas distâncias.</p></div><a class="btn" href="#inscricao">Garanta sua vaga</a></div></section>
+<section class="final"><div class="wrap"><div><h2>${int(left())} vagas restantes</h2><p>Limite de ${int(c.limit)} atletas. Kit Fronteira Pro e área VIP para todos.</p></div><a class="btn" href="#inscricao">Garanta sua vaga</a></div></section>
 </main>`+siteFoot();
 }
 
@@ -573,7 +616,7 @@ let F=null,FE={};
 function demoAthlete(){
   const r=Math.random,pick=a=>a[Math.floor(r()*a.length)],sex=r()<.5?'F':'M',P=NAMES.BR;
   const first=pick(sex==='F'?P.f:P.m),last=pick(P.l)+' '+pick(P.l),y=1970+Math.floor(r()*35);
-  return{dist:F?F.dist:'21',tier:F?F.tier:'basico',name:first+' '+last,email:norm(first)+'.'+norm(last.split(' ')[0])+Math.floor(r()*900+100)+'@exemplo.com',
+  return{dist:F?F.dist:'21',tier:'pro',name:first+' '+last,email:norm(first)+'.'+norm(last.split(' ')[0])+Math.floor(r()*900+100)+'@exemplo.com',
     phone:'+55 45 9'+(8100+Math.floor(r()*1800))+'-'+(1000+Math.floor(r()*8999)),birth:y+'-0'+(1+Math.floor(r()*9))+'-1'+Math.floor(r()*9),sex,country:'BR',doc:genCPF(),shirt:'M',terms:true}
 }
 function ensureF(){if(!F)F=demoAthlete();return F}
@@ -599,9 +642,7 @@ function vForm(){
 <section class="step"><h2>Distância</h2><div class="opts opts-2">
   ${['21','10'].map(k=>opt('dist',k,`<span class="big">${DIST[k].label}</span><span class="d">Largada em ${DIST[k].from}</span><span class="pr">${money(priceOf(k))}</span>`)).join('')}
 </div></section>
-<section class="step"><h2>Kit</h2><div class="opts opts-3">
-  ${Object.keys(KITS).map(k=>opt('tier',k,`<span class="t">${KITS[k].name}</span><span class="d">${esc(KITS[k].items.slice(k==='basico'?0:1).join(', '))}</span><span class="pr">${kitAdd(k)?'+ '+money(kitAdd(k)):'Incluso'}</span>`)).join('')}
-</div></section>
+<section class="step"><h2>Kit</h2><div class="kit-inc"><div><b>Kit ${KITS.pro.name}</b><span class="d">${esc(KITS.pro.items.join(' · '))}</span></div><span class="pr">Incluso</span></div></section>
 <section class="step"><h2>Seus dados</h2><div class="fields">
   <div class="full">${field('name','Nome completo','text','autocomplete="name"')}</div>
   ${field('email','E-mail','email','autocomplete="email"')}
@@ -766,8 +807,7 @@ function oResumo(){
 <div class="grid2">
   <div class="panel chart"><h2>Inscrições por semana <span>semana atual em amarelo</span></h2>${svg}</div>
   <div><div class="panel"><h2>Para resolver</h2>${todo.length?`<ul class="todo">${todo.join('')}</ul>`:'<p class="small muted">Nada pendente.</p>'}${nd.length?'<p style="margin-top:14px"><button class="link" data-act="otab" data-tab="pagamentos">Abrir contestações</button></p>':''}</div>
-  <div class="panel"><h2>Distância</h2><div class="split">${splitRow('21K',by('dist','21'))}${splitRow('10K',by('dist','10'))}</div></div>
-  <div class="panel"><h2>Kits</h2><div class="split">${Object.keys(KITS).map(k=>splitRow(KITS[k].name,by('tier',k))).join('')}</div></div></div>
+  <div class="panel"><h2>Distância</h2><div class="split">${splitRow('21K',by('dist','21'))}${splitRow('10K',by('dist','10'))}</div></div></div>
 </div>`;
 }
 function filtered(){const q=norm(O.q);return DB.regs.filter(r=>(!O.fd||r.dist===O.fd)&&(!O.fs||r.status===O.fs)&&(!q||norm(r.name).includes(q)||norm(r.email).includes(q)||String(r.bib||'').includes(q)||norm(r.doc).includes(q))).sort((a,b)=>b.created-a.created)}
@@ -811,7 +851,7 @@ function oPagamentos(){
 </div>
 <div class="panel"><h2>Por forma de pagamento <span>taxas de exemplo</span></h2><div class="tbl"><table><thead><tr><th>Forma</th><th class="r">Pagamentos</th><th class="r">Volume</th><th class="r">Taxa</th><th class="r">Custo</th></tr></thead><tbody>
 <tr><td>Pix</td><td class="r mono">${int(f.pix[0])}</td><td class="r mono">${money(f.pix[1])}</td><td class="r mono">0,99%</td><td class="r mono">${money(f.pix[2])}</td></tr>
-<tr><td>Cartão</td><td class="r mono">${int(f.card[0])}</td><td class="r mono">${money(f.card[1])}</td><td class="r mono">3,99% + R$ 0,39</td><td class="r mono">${money(f.card[2])}</td></tr></tbody></table></div></div>
+<tr><td>Cartão</td><td class="r mono">${int(f.card[0])}</td><td class="r mono">${money(f.card[1])}</td><td class="r mono">3,99% + R$ 0,00</td><td class="r mono">${money(f.card[2])}</td></tr></tbody></table></div></div>
 <div class="panel"><h2>Contestações <span>o banco do titular pediu o dinheiro de volta</span></h2>
 <p class="small muted" style="max-width:64ch;margin-bottom:16px">Envie as provas antes do prazo. O sistema junta o que já tem: aceite do regulamento com IP, e-mail de confirmação e retirada do kit.</p>
 ${D.length?`<div class="tbl"><table><thead><tr><th>Atleta</th><th>Motivo</th><th class="r">Valor</th><th>Prazo</th><th>Situação</th><th></th></tr></thead><tbody>
@@ -837,9 +877,8 @@ function oAjustes(){
   const num='min="0" step="1" inputmode="numeric"';
   return oHead('Ajustes','Evento e conta')+`<div class="settings">
 <div class="panel"><h2>Preços e vagas <span>valem para as próximas inscrições</span></h2><form data-form="cfg" novalidate><div class="fields">
-${fi('c','p21','Inscrição 21K (R$)',c.p21,'number',num)}${fi('c','p10','Inscrição 10K (R$)',c.p10,'number',num)}
-${fi('c','kitInter','Adicional kit Intermediário (R$)',c.kitInter,'number',num)}${fi('c','kitPremium','Adicional kit Premium (R$)',c.kitPremium,'number',num)}
-${fi('c','fee','Taxa de serviço (R$)',c.fee,'number',num)}${fi('c','limit','Limite de atletas',c.limit,'number','min="1" step="1"')}
+${fi('c','p21','Inscrição 21K (R$)','','number',num+' placeholder="000,00"')}${fi('c','p10','Inscrição 10K (R$)','','number',num+' placeholder="000,00"')}
+${fi('c','fee','Taxa de serviço (R$)','','number',num+' placeholder="000,00"')}${fi('c','limit','Limite de atletas',c.limit,'number','min="1" step="1"')}
 ${fi('c','maxInst','Máximo de parcelas',c.maxInst,'number','min="1" max="12" step="1"')}${fi('c','lote','Texto do lote',c.lote)}
 </div><div><button class="btn btn-ink btn-sm" type="submit">Salvar preços</button></div></form></div>
 <div class="panel"><h2>Sua conta</h2><form data-form="acct" novalidate><div class="fields">
@@ -869,7 +908,7 @@ function render(force){
   if(v!==lastView||force){if(LANDING_ANCHORS.includes(h)){const el=document.getElementById(h);if(el)el.scrollIntoView()}else window.scrollTo(0,0)}
   else if(LANDING_ANCHORS.includes(h)){const el=document.getElementById(h);if(el)el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
   if(v!=='atleta')FLASH='';
-  lastView=v;
+  setHdr();lastView=v;
 }
 function rerender(){
   const a=document.activeElement,id=a&&a.id,s=a&&'selectionStart' in a?(()=>{try{return a.selectionStart}catch(e){return null}})():null;
@@ -877,6 +916,8 @@ function rerender(){
   if(id){const el=document.getElementById(id);if(el){el.focus({preventScroll:true});try{if(s!=null)el.setSelectionRange(s,s)}catch(e){}}}
 }
 addEventListener('hashchange',()=>render());
+function setHdr(){const h=document.querySelector('.site-h.over');if(h)h.classList.toggle('solid',scrollY>24)}
+addEventListener('scroll',setHdr,{passive:true});
 function setTbar(){const t=document.querySelector('.testbar');document.documentElement.style.setProperty('--tbar',(t?t.offsetHeight:0)+'px')}
 addEventListener('resize',setTbar);
 
@@ -924,7 +965,7 @@ document.addEventListener('click',e=>{
     case 'disp-send':r.dispute.state='enviada';logA('Enviou provas da contestação de '+r.name);save();toast('Provas enviadas: aceite com IP, e-mail de confirmação e dados da inscrição.');rerender();break;
     case 'export':{
       const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
-      const rows=[['protocolo','peito','nome','distancia','kit','camiseta','pais','documento','email','celular','situacao','forma','parcelas','total','inscrito_em']].concat(filtered().map(r=>[r.protocol,r.bib,r.name,DIST[r.dist].label,KITS[r.tier].name,r.shirt,COUNTRY[r.country],r.doc,r.email,r.phone,ST[r.status][0],r.method,r.inst,r.total.toFixed(2),fmtDT(r.created)]));
+      const rows=[['protocolo','peito','nome','distancia','kit','camiseta','pais','documento','email','celular','situacao','forma','parcelas','total','inscrito_em']].concat(filtered().map(r=>[r.protocol,r.bib,r.name,DIST[r.dist].label,KITS[r.tier].name,r.shirt,COUNTRY[r.country],r.doc,r.email,r.phone,ST[r.status][0],r.method,r.inst,'000.00',fmtDT(r.created)]));
       try{const b=new Blob(['﻿'+rows.map(x=>x.map(q).join(';')).join('\n')],{type:'text/csv'});const l=document.createElement('a');l.href=URL.createObjectURL(b);l.download='inscritos-meia-3-fronteiras.csv';document.body.appendChild(l);l.click();l.remove()}catch(err){}
       logA('Exportou a lista de inscritos');save();toast('Planilha gerada com '+(rows.length-1)+' atletas.');break}
     case 'team-rm':DB.team=DB.team.filter(t=>t.id!==id);logA('Removeu um membro da equipe');save();rerender();break;
@@ -952,7 +993,7 @@ document.addEventListener('submit',e=>{
   if(k==='insc')submitInsc();
   else if(k==='portal'){const em=PL.trim().toLowerCase();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){toast('Digite um e-mail válido.');return}DB.sess.athlete=em;save();toast('No sistema real, o link chega por e-mail. Aqui você entra direto.');rerender()}
   else if(k==='org'){DB.sess.org=true;save();rerender()}
-  else if(k==='cfg'){const n=x=>Math.max(0,Math.round(+g(x)||0));Object.assign(DB.cfg,{p21:n('p21'),p10:n('p10'),kitInter:n('kitInter'),kitPremium:n('kitPremium'),fee:n('fee'),limit:Math.max(1,n('limit')),maxInst:Math.min(12,Math.max(1,n('maxInst'))),lote:g('lote')});logA('Alterou preços e vagas');save();toast('Preços salvos. Valem para as próximas inscrições.');rerender()}
+  else if(k==='cfg'){const c0={...DB.cfg},n=x=>Math.max(0,Math.round(+g(x)||0));Object.assign(DB.cfg,{p21:g('p21')===''?c0.p21:n('p21'),p10:g('p10')===''?c0.p10:n('p10'),fee:g('fee')===''?c0.fee:n('fee'),limit:Math.max(1,n('limit')),maxInst:Math.min(12,Math.max(1,n('maxInst'))),lote:g('lote')});logA('Alterou preços e vagas');save();toast('Preços salvos. Valem para as próximas inscrições.');rerender()}
   else if(k==='acct'){Object.assign(DB.admin,{name:g('name'),role:g('role'),email:g('email'),phone:g('phone')});logA('Atualizou os dados da conta');save();toast('Conta salva.');rerender()}
   else if(k==='orgi'){Object.assign(DB.orgi,{name:g('name'),cnpj:g('cnpj'),city:g('city'),email:g('email')});logA('Atualizou os dados da organização');save();toast('Organização salva.');rerender()}
   else if(k==='team'){if(!g('name')||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(g('email'))){toast('Informe nome e e-mail para convidar.');return}DB.team.push({id:'t'+Date.now(),name:g('name'),email:g('email'),role:g('role')});logA('Convidou '+g('name'));save();toast('Convite enviado para '+g('email')+'.');rerender()}

@@ -7,8 +7,8 @@ Plataforma própria de inscrições da prova: site do evento, inscrição, pagam
 Protótipo navegável em [`prototipo/index.html`](prototipo/index.html). É um arquivo HTML único, sem servidor: abra no navegador.
 
 - **Landing page:** página única e simples: hero com mapa do percurso, as duas distâncias (21K e 10K), kits, informações práticas e dúvidas.
-- **Kits em três níveis:** Básico (incluso), Intermediário e Premium, com seção própria na landing page. Itens e preços são de exemplo e ajustáveis no painel.
-- **Inscrição:** distância, kit, dados do atleta (CPF para brasileiros, documento do país para estrangeiros) e aceite do regulamento. Sem categorias especiais: o produto é o mesmo para todos.
+- **Kit Fronteira Pro:** um kit único, incluso em toda inscrição (camiseta, kit compressão, meia de compressão, manguito, cap, botton e squeeze), com destaque na landing page junto com a área VIP, a retirada sem fila e a volta garantida para Foz.
+- **Inscrição:** distância, dados do atleta (CPF para brasileiros, documento do país para estrangeiros) e aceite do regulamento. Sem categorias especiais: o produto é o mesmo para todos.
 - **Checkout do gateway:** tela simulada. No sistema real ela é do Mercado Pago (Checkout Pro) ou da Stripe.
 - **Área do atleta:** número de peito, QR code para retirada do kit, status do documento e do pagamento, cancelamento em até 7 dias.
 - **Painel da organização** (link "Organização" no rodapé): cinco telas. Resumo, Inscritos (com ficha do atleta e reembolso), Pagamentos (financeiro e contestações), Entrega de kits e Ajustes (preços, conta do administrador, organização e equipe).
