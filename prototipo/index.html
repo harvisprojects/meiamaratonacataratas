@@ -169,11 +169,30 @@ section[id]{scroll-margin-top:64px}
 .equip-list li span{font:500 12px/1 var(--mono);color:var(--sun);letter-spacing:0}
 .equip-img{margin:0;border-radius:14px;overflow:hidden;aspect-ratio:4/5;max-width:100%}
 .equip-img img{width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block}
+.kit-car{position:relative;aspect-ratio:1/1;background:#0d1b2a}
+.kit-track{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;outline:none}
+.kit-track::-webkit-scrollbar{display:none}
+.kit-track:focus-visible{box-shadow:inset 0 0 0 3px var(--sun)}
+.kit-slide{flex:0 0 100%;margin:0;position:relative;scroll-snap-align:start;scroll-snap-stop:always}
+.kit-slide img{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
+.kit-slide figcaption{position:absolute;left:16px;top:16px;padding:6px 10px;border-radius:999px;background:rgba(10,20,30,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#fff;font:600 12px/1 var(--mono);letter-spacing:.04em;text-transform:uppercase}
+.kit-ui{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:44px 16px 16px;background:linear-gradient(transparent,rgba(5,12,20,.55));pointer-events:none}
+.kit-count{color:rgba(255,255,255,.8);font:500 13px/1 var(--mono);letter-spacing:.04em}
+.kit-count b{color:#fff;font-weight:700}
+.kit-nav{display:flex;gap:8px;pointer-events:auto}
+.kit-btn{width:44px;height:44px;border-radius:50%;border:0;background:#fff;color:#0d1b2a;font-size:18px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:transform 160ms var(--ease-out),opacity 200ms ease}
+.kit-btn:active{transform:scale(.94)}
+.kit-btn:disabled{opacity:.35;cursor:default}
+.kit-btn:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.kit-dots{display:flex;justify-content:center;gap:6px;position:absolute;left:0;right:0;bottom:-22px}
+.kit-dots i{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.3);transition:width 240ms var(--ease-out),background-color 240ms ease}
+.kit-dots i.on{width:20px;background:var(--sun)}
+.kit-car{overflow:visible;margin-bottom:22px}.kit-track{border-radius:14px}.kit-ui{border-radius:0 0 14px 14px}
 .extras{margin-top:clamp(72px,9vw,112px)}
 .extras-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;margin-top:20px}
 .extra h3{font:800 28px/1 var(--display);text-transform:uppercase}
 .extra p{color:rgba(255,255,255,.75);font-size:15px;margin-top:10px;max-width:36ch}
-@media (max-width:860px){.equip-g{grid-template-columns:1fr;gap:36px}.equip-img{aspect-ratio:1/1}.extras{margin-top:56px}.extras-g{grid-template-columns:1fr;gap:28px}}
+@media (max-width:860px){.equip-g{grid-template-columns:1fr;gap:36px}.extras{margin-top:56px}.extras-g{grid-template-columns:1fr;gap:28px}}
 @media (max-width:480px){.equip-list{grid-template-columns:1fr}}
 .kit-inc{display:flex;justify-content:space-between;align-items:center;gap:16px;border:1.5px solid var(--ink);border-radius:10px;padding:18px 20px}
 .kit-inc b{display:block;font-weight:700;font-size:17px}
@@ -446,8 +465,6 @@ td .sub{display:block;font-size:12px;color:var(--muted)}
   .dist:hover{border-color:var(--ink)}
   .equip-list li{transition:transform 200ms var(--ease-out)}
   .equip-list li:hover{transform:translateX(4px)}
-  .equip-img img{transition:transform 900ms var(--ease-out)}
-  .equip-img:hover img{transform:scale(1.03)}
   .faq summary:hover::after{color:var(--ink)}
 }
 @media (prefers-reduced-motion:reduce){
@@ -617,6 +634,16 @@ const PHOTOS={
   hito:{src:'img/foto-marco.jpg',alt:'Hito Tres Fronteras em Puerto Iguazú, com as bandeiras do Paraguai, da Argentina e do Brasil e a Ponte Tancredo Neves ao fundo',by:'Horacio Cambeiro (2025)',lic:'CC BY 4.0',url:'https://commons.wikimedia.org/wiki/File:Triple_frontera_monument_(Argentina)_%C2%B7_Hito_Tres_Fronteras_(Puerto_Iguaz%C3%BA,_Provincia_de_Misiones,_Argentina)_con_el_fondo_de_Paraguay.jpg'},
   parana:{src:'img/parana.jpg',alt:'Rio Paraná visto da Ponte da Amizade',by:'Falk2',lic:'CC BY-SA 4.0',url:'https://commons.wikimedia.org/wiki/File:J37_837_R%C3%ADo_Paran%C3%A1,_Foz_do_Igua%C3%A7u.jpg'}
 };
+const KIT_FOTOS=[
+  {f:'kit-corrida',cap:'Kit completo',alt:'Corredor com o kit Fronteira Pro completo e o número de peito, diante das Cataratas do Iguaçu'},
+  {f:'kit-camiseta',cap:'Camiseta oficial',alt:'Camiseta oficial azul-marinho com o skyline das três fronteiras estampado no peito'},
+  {f:'kit-cap',cap:'Cap',alt:'Corredor ajustando o cap azul-marinho com a silhueta da ponte bordada'},
+  {f:'kit-manguito',cap:'Manguito de compressão',alt:'Manguitos de compressão com as faixas verde, azul e vermelha no punho'},
+  {f:'kit-meia',cap:'Meia de compressão',alt:'Meias de compressão azul-marinho com faixas coloridas, em corrida perto das Cataratas'},
+  {f:'kit-squeeze',cap:'Squeeze',alt:'Corredor segurando o squeeze azul e verde do kit'},
+  {f:'kit-numero',cap:'Número de peito',alt:'Corredor com o número de peito 2741 preso na camiseta oficial'},
+  {f:'kit-bottons',cap:'Bottons',alt:'Quatro bottons MMTF 2K27: Marco das Três Fronteiras, Cataratas, onça-pintada e Itaipu'},
+];
 const photo=(k,cap,extra='')=>{const P=PHOTOS[k];return `<figure class="photo"><img src="${P.src}" alt="${esc(P.alt)}" loading="${k==='runners'?'eager':'lazy'}">${extra}${cap?`<figcaption>${esc(cap)}</figcaption>`:''}</figure>`};
 function countParts(){const d=Math.max(0,EVENT-now());return[[Math.floor(d/DAY),'dias'],[Math.floor(d%DAY/36e5),'horas'],[Math.floor(d%36e5/6e4),'min']]}
 function countHTML(){return countParts().map(([v,l])=>`<div><b>${String(v).padStart(2,'0')}</b><span>${l}</span></div>`).join('')}
@@ -633,7 +660,7 @@ function vLanding(){
     <p class="eyebrow">Meia Maratona Internacional das 3 Fronteiras · 2027</p>
     <h1 class="h-hero">Três países.<span>Uma chegada.</span></h1>
     <p class="lead">Uma meia maratona cuidada em cada detalhe: kit Fronteira Pro completo, área VIP na chegada e volta garantida para Foz. Você só precisa correr.</p>
-    <div class="hero-cta"><a class="btn" href="#inscricao">Inscreva-se</a><a class="btn btn-line" href="#kits">Conheça o kit Pro</a></div>
+    <div class="hero-cta"><a class="btn" href="#inscricao">Inscreva-se</a><a class="btn btn-line" href="#percurso">O percurso</a></div>
   </div></div>
   <div class="wrap hero-facts">
     <div><span class="eyebrow">Data</span><b>11 out 2027</b></div>
@@ -664,7 +691,11 @@ function vLanding(){
       <ul class="equip-list">${KITS.pro.items.map((i,n)=>`<li><span>${String(n+1).padStart(2,'0')}</span>${esc(i)}</li>`).join('')}</ul>
       <a class="btn" href="#inscricao">Garanta seu kit</a>
     </div>
-    <figure class="equip-img"><img src="img/foto-atleta.jpg" alt="Corredor com o kit Fronteira Pro completo (camiseta, manguito, cap e meia de compressão) diante das Cataratas do Iguaçu" loading="lazy"></figure>
+    <div class="equip-img kit-car" role="region" aria-roledescription="carrossel" aria-label="Fotos do kit Fronteira Pro">
+      <div class="kit-track" tabindex="0">${KIT_FOTOS.map((p,i)=>`<figure class="kit-slide" aria-label="${i+1} de ${KIT_FOTOS.length}"><img src="img/${p.f}.jpg" alt="${esc(p.alt)}" loading="${i?'lazy':'eager'}" draggable="false"><figcaption>${esc(p.cap)}</figcaption></figure>`).join('')}</div>
+      <div class="kit-ui"><span class="kit-count" aria-live="polite"><b>01</b> / ${String(KIT_FOTOS.length).padStart(2,'0')}</span><span class="kit-nav"><button type="button" class="kit-btn" data-car="-1" aria-label="Foto anterior" disabled>&#8592;</button><button type="button" class="kit-btn" data-car="1" aria-label="Próxima foto">&#8594;</button></span></div>
+      <div class="kit-dots" aria-hidden="true">${KIT_FOTOS.map((_,i)=>`<i${i?'':' class="on"'}></i>`).join('')}</div>
+    </div>
   </div>
   <div class="extras">
     <p class="eyebrow">A experiência</p>
@@ -1116,6 +1147,18 @@ document.addEventListener('click',e=>{
     case 'team-rm':DB.team=DB.team.filter(t=>t.id!==id);logA('Removeu um membro da equipe');save();rerender();break;
   }
 });
+function kitSync(t){const car=t.closest('.kit-car');if(!car)return;const n=t.children.length,i=Math.round(t.scrollLeft/t.clientWidth);
+  car.querySelector('.kit-count b').textContent=String(i+1).padStart(2,'0');
+  car.querySelectorAll('.kit-dots i').forEach((d,k)=>d.classList.toggle('on',k===i));
+  t._i=i;if(t._to===i&&Math.abs(t.scrollLeft-i*t.clientWidth)<2)t._to=undefined;
+  const [p,nx]=car.querySelectorAll('.kit-btn');p.disabled=i<=0;nx.disabled=i>=n-1}
+document.addEventListener('scroll',e=>{const t=e.target;if(t.classList&&t.classList.contains('kit-track'))kitSync(t)},{capture:true,passive:true});
+document.addEventListener('scrollend',e=>{const t=e.target;if(t.classList&&t.classList.contains('kit-track')){if(t._to!=null&&Math.abs(t.scrollLeft-t._to*t.clientWidth)<2)t._to=undefined;kitSync(t)}},true);
+['pointerdown','wheel','touchstart'].forEach(ev=>document.addEventListener(ev,e=>{const t=e.target.closest&&e.target.closest('.kit-track');if(t)t._to=undefined},{capture:true,passive:true}));
+addEventListener('resize',()=>document.querySelectorAll('.kit-track').forEach(t=>{const i=t._i||0;t.scrollTo({left:i*t.clientWidth,behavior:'auto'})}));
+document.addEventListener('click',e=>{const b=e.target.closest('[data-car]');if(!b)return;const t=b.closest('.kit-car').querySelector('.kit-track');
+  const w=t.clientWidth,n=t.children.length,cur=t._to??Math.round(t.scrollLeft/w),to=Math.max(0,Math.min(n-1,cur+ +b.dataset.car));t._to=to;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;t.scrollTo({left:to*w,behavior:reduce?'auto':'smooth'})});
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&O.sel){O.sel=null;rerender()}
   if(e.key==='Enter'&&e.target.matches('tr[data-act="open"]')){e.target.click()}
