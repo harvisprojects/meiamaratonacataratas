@@ -612,9 +612,9 @@ const MAP=`<svg viewBox="0 0 420 380" role="img" aria-label="Mapa simplificado: 
 </svg>`;
 const PHOTOS={
   runners:{src:'img/runners.jpg',alt:'Corredores numa avenida durante uma meia maratona',by:'Thomas Krakow',lic:'CC BY-SA 4.0',url:'https://commons.wikimedia.org/wiki/File:Runners_of_the_VIVAWEST_Marathon_2022_during_the_half_marathon.jpg'},
-  ponte:{src:'img/ponte.jpg',alt:'Ponte da Amizade sobre o rio Paraná, entre Foz do Iguaçu e Ciudad del Este',by:'Rodrigo Yoshioka',lic:'CC BY 2.0',url:'https://commons.wikimedia.org/wiki/File:Ponte_da_Amizade_in_Foz_do_Iguacu.jpg'},
-  falls:{src:'img/falls.jpg',alt:'Cataratas do Iguaçu vistas do lado brasileiro',by:'W. Bulach',lic:'CC BY-SA 4.0',url:'https://commons.wikimedia.org/wiki/File:00_1838_Iguazu_Falls_from_the_Brazilian_side.jpg'},
-  hito:{src:'img/hito.jpg',alt:'Hito Tres Fronteras em Puerto Iguazú, com as bandeiras do Paraguai, da Argentina e do Brasil',by:'Horacio Cambeiro',lic:'CC BY 4.0',url:'https://commons.wikimedia.org/wiki/File:Triple_frontera_monument_(Argentina)_%C2%B7_Hito_Tres_Fronteras_(Puerto_Iguaz%C3%BA,_Argentina).jpg'},
+  ponte:{src:'img/foto-ponte.jpg',alt:'Ponte da Amizade sobre o rio Paraná, com Ciudad del Este ao fundo',by:'Pedro Nardi (2024)',lic:'CC BY 4.0',url:'https://commons.wikimedia.org/wiki/File:Ponte_da_Amizade.jpg'},
+  falls:{src:'img/foto-cataratas.jpg',alt:'Passarela da Garganta do Diabo nas Cataratas do Iguaçu, lado brasileiro',by:'W.moira (2026)',lic:'CC BY-SA 4.0',url:'https://commons.wikimedia.org/wiki/File:Cataratas_de_Igua%C3%A7u_panor%C3%A2mica_03.jpg'},
+  hito:{src:'img/foto-marco.jpg',alt:'Hito Tres Fronteras em Puerto Iguazú, com as bandeiras do Paraguai, da Argentina e do Brasil e a Ponte Tancredo Neves ao fundo',by:'Horacio Cambeiro (2025)',lic:'CC BY 4.0',url:'https://commons.wikimedia.org/wiki/File:Triple_frontera_monument_(Argentina)_%C2%B7_Hito_Tres_Fronteras_(Puerto_Iguaz%C3%BA,_Provincia_de_Misiones,_Argentina)_con_el_fondo_de_Paraguay.jpg'},
   parana:{src:'img/parana.jpg',alt:'Rio Paraná visto da Ponte da Amizade',by:'Falk2',lic:'CC BY-SA 4.0',url:'https://commons.wikimedia.org/wiki/File:J37_837_R%C3%ADo_Paran%C3%A1,_Foz_do_Igua%C3%A7u.jpg'}
 };
 const photo=(k,cap,extra='')=>{const P=PHOTOS[k];return `<figure class="photo"><img src="${P.src}" alt="${esc(P.alt)}" loading="${k==='runners'?'eager':'lazy'}">${extra}${cap?`<figcaption>${esc(cap)}</figcaption>`:''}</figure>`};
